@@ -1,0 +1,9 @@
+Building Bzlcoin
+
+See doc/readme-qt.rst for instructions on building Bzlcoin QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of Bzlcoin.
+
+See doc/build-*.txt for instructions on building bzlcoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of Bzlcoin.

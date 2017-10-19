@@ -1,0 +1,5 @@
+bzlcoin-qt usr/bin
+share/pixmaps/bitcoin32.xpm usr/share/pixmaps
+share/pixmaps/bitcoin80.xpm usr/share/pixmaps
+debian/bzlcoin-qt.desktop usr/share/applications
+debian/bzlcoin-qt.protocol usr/share/kde4/services/

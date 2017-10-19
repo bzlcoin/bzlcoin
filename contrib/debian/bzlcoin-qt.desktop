@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=BZLCoin
+Comment=BZLCoin P2P Cryptocurrency
+Comment[fr]=BZLCoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=BZLCoin, eşten eşe kriptografik sanal para birimi
+Exec=/usr/bin/BZLCoin
+Terminal=false
+Type=Application
+Icon=/usr/share/pixmaps/bitcoin80.xpm
+MimeType=x-scheme-handler/bzlcoin;
+Categories=Office;
