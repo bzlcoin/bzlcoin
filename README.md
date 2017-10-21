@@ -35,7 +35,7 @@ LINKS
 ==========================
 Official Website(http://bzlcoin.org/)
 Official Forums(http://forum.bzlcoin.org/)
-Denarius Twitter(https://twitter.com/bzlcoin)
+Bzlcoin Twitter(https://twitter.com/bzlcoin)
 
 
 Development process
