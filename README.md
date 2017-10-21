@@ -33,8 +33,9 @@ Technology
 
 LINKS
 ==========================
-*Official Website bzlcoin.org
-Forum: forun.bzlcoin.org
+Official Website(http://bzlcoin.org/)
+Official Forums(http://forum.bzlcoin.org/)
+Denarius Twitter(https://twitter.com/bzlcoin)
 
 
 Development process
