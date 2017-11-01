@@ -2,6 +2,8 @@
 Tribus Algo PoW/PoS Hybrid Cryptocurrency
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
+![logo](http://i.imgur.com/sVVRF46.png)
+
 Intro
 ==========================
 BZLCoin is an anonymous, untraceable and secure hybrid cryptocurrency. 
@@ -36,7 +38,6 @@ LINKS
 Official Website(http://bzlcoin.org/)
 Official Forums(http://forum.bzlcoin.org/)
 Bzlcoin Twitter(https://twitter.com/bzlcoin)
-
 
 Development process
 ===========================
