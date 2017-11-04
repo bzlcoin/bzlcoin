@@ -1299,7 +1299,7 @@ void MapPort()
 // The second name should resolve to a list of seed addresses.
 
 static const char *strDNSSeed[][2] = {
-    {"seed.bzlcoin.name", "seed.bzlcoin.name"}
+    {"67.207.89.186", "67.207.89.186"}
 };
 
 void ThreadDNSAddressSeed(void* parg)
