@@ -2,7 +2,7 @@
 Tribus Algo PoW/PoS Hybrid Cryptocurrency
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-![logo](http://i.imgur.com/sVVRF46.png)
+![logo](https://i.imgur.com/X9KLdPr.png)
 
 Intro
 ==========================
@@ -17,10 +17,10 @@ BZLCoin [BZL] is an anonymous, untraceable, energy efficient, Proof-of-Work (New
 Specifications
 ==========================
 * Total number of coins: 7,000,000 BZL
-* Ideal block time: 60 seconds
+* Ideal block time: 30 seconds
 * Stake interest: 6% annual static inflation
 * Confirmations: 10 blocks
-* Maturity: 30 blocks (30 minutes)
+* Maturity: 30 blocks (15 minutes)
 * Min stake age: 8 hours
 * RPC Port: 7771
 
@@ -35,9 +35,9 @@ Technology
 
 LINKS
 ==========================
-Official Website(http://bzlcoin.org/)
-Official Forums(http://forum.bzlcoin.org/)
-Bzlcoin Twitter(https://twitter.com/bzlcoin)
+*Official Website(http://bzlcoin.org/)<br>
+*Official Forums(http://forum.bzlcoin.org/)<br>
+*Bzlcoin Twitter(https://twitter.com/bzlcoin)
 
 Development process
 ===========================
