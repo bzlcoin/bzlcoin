@@ -2,7 +2,7 @@
 #define CLIENTVERSION_H
 
 //
-// client versioning
+// client versioning 
 //
 
 // These need to be macros, as version.cpp's and bitcoin-qt.rc's voodoo requires it
