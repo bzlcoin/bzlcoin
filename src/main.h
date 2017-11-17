@@ -28,7 +28,7 @@ class CNode;
 
 // General BZLCoin Block Values
 
-static const int LAST_POW_BLOCK = 3000000; // V1.1 / Block 3m Approx. 3 years of Proof of Work before Proof of Stake consensus kicks in
+static const int LAST_POW_BLOCK = 3000000; // V1.0.1 / Block 3m Approx. 3 years of Proof of Work before Proof of Stake consensus kicks in
 static const int FAIR_LAUNCH_BLOCK = 270; // Last Block until full block reward starts
 static const unsigned int MAX_BLOCK_SIZE = 1000000; // 1MB block hard limit, double the size of Bitcoin
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2; // 512kb block soft limit, ditto
