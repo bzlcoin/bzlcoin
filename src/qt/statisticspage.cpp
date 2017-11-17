@@ -64,13 +64,13 @@ void StatisticsPage::updateStatistics()
     }
 
     QString subsidy = "";
-	if (pindexBest->nHeight < 1000000)
+	if (pindexBest->nHeight < 3398) // V1.1
     {
         subsidy = "2 BZL per block";
     }
 	else if (pindexBest->nHeight < 2000000)
     {
-        subsidy = "2 BZL per block";
+        subsidy = "1 BZL per block";
     }
 	else if (pindexBest->nHeight < 3000000)
     {
