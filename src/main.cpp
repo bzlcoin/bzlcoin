@@ -41,7 +41,7 @@ CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
 // Block Variables
 
-unsigned int nTargetSpacing     = 30;               // V1.1 / 30 seconds, FAST / fork in block 3398
+unsigned int nTargetSpacing     = 30;               // V1.0.1 / 30 seconds, FAST / fork in block 3398
 unsigned int nStakeMinAge       = 8 * 60 * 60;      // 8 hour min stake age
 unsigned int nStakeMaxAge       = -1;               // unlimited
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
@@ -971,13 +971,13 @@ int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
 		nSubsidy = 1500000 * COIN;  // ~21.43% Premine, 1.5m BZL	
 	else if (pindexBest->nHeight <= FAIR_LAUNCH_BLOCK) // Block 270, Instamine prevention
         nSubsidy = 1 * COIN/2;	
-	else if (pindexBest->nHeight <= 3398) // V1.1 fork in block 3398/ Block 3398 ~ 6,796k BZl
+	else if (pindexBest->nHeight <= 3398) // V1.0.1 fork in block 3398/ Block 3398 ~ 6,796k BZl
 		nSubsidy = 2 * COIN;
-	else if (pindexBest->nHeight <= 1000000) // V1.1 / Block 1m ~ 993,204k BZL
+	else if (pindexBest->nHeight <= 1000000) // V1.0.1 / Block 1m ~ 993,204k BZL
 		nSubsidy = 1 * COIN;	
-	else if (pindexBest->nHeight <= 2000000) // V1.1 / Block 2m ~1m BZL
+	else if (pindexBest->nHeight <= 2000000) // V1.0.1 / Block 2m ~1m BZL
 		nSubsidy = 1 * COIN;
-	else if (pindexBest->nHeight <= 3000000) // V1.1 / Block 3m ~1m BZL
+	else if (pindexBest->nHeight <= 3000000) // V1.0.1 / Block 3m ~1m BZL
 		nSubsidy = 1 * COIN;		
     else if (pindexBest->nHeight > LAST_POW_BLOCK) // Block 1.5m
 		nSubsidy = 0; // PoW Ends ~ 4,500,000 Total BZL Mined via PoW
@@ -2072,7 +2072,7 @@ bool CBlock::AcceptBlock()
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // Check proof-of-work or proof-of-stake
-    if (nHeight > 3398 && nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake())) // V1.1, fork in block 3398
+    if (nHeight > 3398 && nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake())) // V1.0.1, fork in block 3398
         return DoS(100, error("AcceptBlock() : incorrect %s", IsProofOfWork() ? "proof-of-work" : "proof-of-stake"));
 
     // Check timestamp against prev
