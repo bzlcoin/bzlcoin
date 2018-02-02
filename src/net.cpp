@@ -1300,6 +1300,10 @@ void MapPort()
 
 static const char *strDNSSeed[][2] = {
     {"67.207.89.186", "67.207.89.186"}
+	{"128.199.216.229", "128.199.216.229"},
+	{"128.199.200.72", "128.199.200.72"},
+	{"95.85.34.235", "95.85.34.235"},
+	{"dnsseed.bzlcoin.name", "dnsseed.bzlcoin.name"}
 };
 
 void ThreadDNSAddressSeed(void* parg)
