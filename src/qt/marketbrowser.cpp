@@ -12,22 +12,26 @@
 
 using namespace json_spirit;
 
-const QString kBaseUrl = "http://bzlcoin.io/dnrusd.php";
-const QString kBaseUrl1 = "http://blockchain.info/tobtc?currency=USD&value=1";
-const QString kBaseUrl2 = "http://bzlcoin.io/dnrmc.php";
-const QString kBaseUrl3 = "http://bzlcoin.io/dnrbtc.php";
+const QString kBaseUrl = "https://bzlcoin.org/marketbzl.php?market=market.usd";
+const QString kBaseUrl0 = "https://bzlcoin.org/marketbzl.php?market=market.brl";
+const QString kBaseUrl1 = "https://blockchain.info/tobtc?currency=USD&value=1";
+const QString kBaseUrl2 = "https://bzlcoin.org/marketbzl.php?market=bzl.capbzl.usd";
+const QString kBaseUrl3 = "https://bzlcoin.org/marketbzl.php?market=market.btc";
 
 QString bitcoinp = "";
 QString bzlcoinp = "";
+QString bzlcoinp2 = "";
 QString dnrmcp = "";
 QString dnrbtcp = "";
 double bitcoin2;
 double bzlcoin2;
+double bzlcoin3;
 double dnrmc2;
 double dnrbtc2;
 QString bitcoing;
 QString dnrmarket;
 QString dollarg;
+QString realarg;
 int mode=1;
 int o = 0;
 
@@ -51,6 +55,7 @@ void MarketBrowser::update()
 {
     QString temps = ui->egals->text();
     double totald = dollarg.toDouble() * temps.toDouble();
+	double totaldb = realarg.toDouble() * temps.toDouble();
     double totaldq = bitcoing.toDouble() * temps.toDouble();
     ui->egald->setText("$ "+QString::number(totald)+" USD or "+QString::number(totaldq)+" BTC");
 
@@ -59,6 +64,7 @@ void MarketBrowser::update()
 void MarketBrowser::requests()
 {
 	getRequest(kBaseUrl);
+	getRequest(kBaseUrl0);
     getRequest(kBaseUrl1);
 	getRequest(kBaseUrl2);
 	getRequest(kBaseUrl3);
@@ -92,7 +98,7 @@ if (what == kBaseUrl) // BZLCoin Price
     bzlcoin2 = (bzlcoin.toDouble());
     bzlcoin = QString::number(bzlcoin2, 'f', 2);
 	
-    if(bzlcoin > bzlcoinp)
+   if(bzlcoin > bzlcoinp)
     {
         ui->bzlcoin->setText("<font color=\"yellow\">$" + bzlcoin + "</font>");
     } else if (bzlcoin < bzlcoinp) {
@@ -103,6 +109,28 @@ if (what == kBaseUrl) // BZLCoin Price
 
     bzlcoinp = bzlcoin;
 	dollarg = bzlcoin;
+}
+
+if (what == kBaseUrl0) // BZLCoin Price BRL
+{
+
+    // QNetworkReply is a QIODevice. So we read from it just like it was a file
+    QString bzlcoinz = finished->readAll();
+    bzlcoin3 = (bzlcoinz.toDouble());
+    bzlcoinz = QString::number(bzlcoin3, 'f', 2);
+	
+	/* 
+    if(bzlcoinz > bzlcoinp2)
+    {
+        ui->bzlcoinz->setText("<font color=\"yellow\">$" + bzlcoinz + "</font>");
+    } else if (bzlcoinz < bzlcoinp) {
+        ui->bzlcoinz->setText("<font color=\"red\">$" + bzlcoinz + "</font>");
+        } else {
+    ui->bzlcoin->setText("$"+bzlcoinz+" BRL");
+    } */
+	
+    bzlcoinp2 = bzlcoinz;
+	realarg = bzlcoinz;
 }
 
 if (what == kBaseUrl1) // Bitcoin Price

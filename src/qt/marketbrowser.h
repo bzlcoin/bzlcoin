@@ -14,6 +14,7 @@
 extern QString bitcoing;
 extern QString dollarg;
 extern QString dnrmarket;
+extern QString realarg;
 
 namespace Ui {
 class MarketBrowser;

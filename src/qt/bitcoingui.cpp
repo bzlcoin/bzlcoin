@@ -484,7 +484,7 @@ void BitcoinGUI::createToolBars()
     mainToolbar->addAction(messageAction);
     mainToolbar->addAction(statisticsAction);
     mainToolbar->addAction(blockAction);
-    //mainToolbar->addAction(marketAction);
+    mainToolbar->addAction(marketAction);
     //mainToolbar->addAction(chatAction); Next release
 
     secondaryToolbar = addToolBar(tr("Actions toolbar"));

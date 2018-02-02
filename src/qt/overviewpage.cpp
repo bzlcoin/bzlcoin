@@ -134,7 +134,7 @@ void OverviewPage::setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBa
 {
     int unit = model->getOptionsModel()->getDisplayUnit();
     //int unitUSD = BitcoinUnits::USD;
-    //int unitdBTC = BitcoinUnits::dBTC;
+    int unitdBTC = BitcoinUnits::dBTC;
     currentBalance = balance;
     currentStake = stake;
     currentUnconfirmedBalance = unconfirmedBalance;
@@ -146,12 +146,18 @@ void OverviewPage::setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBa
     ui->labelTotal->setText(BitcoinUnits::formatWithUnit(unit, balance + stake + unconfirmedBalance + immatureBalance));
     //ui->labelUSDTotal->setText(BitcoinUnits::formatWithUnit(unitUSD, dollarg.toDouble() * (balance + stake + unconfirmedBalance + immatureBalance)));
 	
-	//QString total;
-	//double dollarg2 = (dollarg.toDouble() * (balance + stake + unconfirmedBalance + immatureBalance) / 100000000);
-	//total = QString::number(dollarg2, 'f', 2);
-	//ui->labelUSDTotal->setText("$" + total + " USD");
+	QString total;
+	double dollarg2 = (dollarg.toDouble() * (balance + stake + unconfirmedBalance + immatureBalance) / 100000000);
+	total = QString::number(dollarg2, 'f', 2);
+	ui->labelUSDTotal->setText("$" + total + " USD");
 	
-    //ui->labelBTCTotal->setText(BitcoinUnits::formatWithUnit(unitdBTC, bitcoing.toDouble() * (balance + stake + unconfirmedBalance + immatureBalance)));
+	//preço em Real
+	QString totalbrl;
+	double realarg2 = (realarg.toDouble() * (balance + stake + unconfirmedBalance + immatureBalance) / 100000000);
+	totalbrl = QString::number(realarg2, 'f', 2);
+	ui->labelBRLTotal->setText("R$" + totalbrl + " BRL");
+	
+    ui->labelBTCTotal->setText(BitcoinUnits::formatWithUnit(unitdBTC, bitcoing.toDouble() * (balance + stake + unconfirmedBalance + immatureBalance)));
     ui->labelTradeLink->setTextFormat(Qt::RichText);
     ui->labelTradeLink->setTextInteractionFlags(Qt::TextBrowserInteraction);
     ui->labelTradeLink->setOpenExternalLinks(true);

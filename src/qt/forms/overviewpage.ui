@@ -227,7 +227,6 @@
            <widget class="QLabel" name="labelTotal">
             <property name="font">
              <font>
-              <pointsize>11</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -243,6 +242,84 @@
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+		    <item row="6" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>USD Total:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="labelUSDTotal">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Your current total balance in USD, Rate is not updated often</string>
+            </property>
+            <property name="text">
+             <string>0 USD</string>
+            </property>
+           </widget>
+          </item>
+		  <item row="7" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>BRL Total:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="labelBRLTotal">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Your current total balance in BRL, Rate is not updated often</string>
+            </property>
+            <property name="text">
+             <string>0 BRL</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>BTC Total:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="labelBTCTotal">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>IBeamCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Your current total balance in BTC, Rate is not updated often</string>
+            </property>
+            <property name="text">
+             <string>0 BTC</string>
             </property>
            </widget>
           </item>
@@ -270,7 +347,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../bitcoin.qrc">:/icons/bzlcoin</pixmap>
+        <pixmap resource="../bitcoin.qrc">:/icons/denarius</pixmap>
        </property>
       </widget>
      </item>
@@ -291,20 +368,15 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QLabel" name="label_4">
-            <property name="font">
-             <font>
-              <pointsize>11</pointsize>
-             </font>
-            </property>
             <property name="text">
-             <string>&lt;b&gt;Recent Transactions&lt;/b&gt;</string>
+             <string>&lt;b&gt;Recent transactions&lt;/b&gt;</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="labelTransactionsStatus">
             <property name="toolTip">
-             <string>The displayed information may be out of date. Your wallet automatically synchronizes with the BZLCoin network after a connection is established, but this process has not completed yet.</string>
+             <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Denarius network after a connection is established, but this process has not completed yet.</string>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel { color: red; }</string>

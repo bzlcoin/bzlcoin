@@ -549,7 +549,7 @@ Este produto inclui software desenvolvido pelo Projeto OpenSSL para uso no OpenS
     <message>
         <location line="+40"/>
         <source>Downloaded %1 blocks of transaction history.</source>
-        <translation type="unfinished"/>
+        <translation>Baixando %1 blocos de histórico de transações</translation>
     </message>
     <message>
         <location line="+413"/>
@@ -559,22 +559,22 @@ Este produto inclui software desenvolvido pelo Projeto OpenSSL para uso no OpenS
     <message>
         <location line="+6"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished"/>
+        <translation>Não estacando porque a carteira está bloqueada</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Not staking because wallet is offline</source>
-        <translation type="unfinished"/>
+       <translation>Não estacando porque a carteira está sem conexão</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Not staking because wallet is syncing</source>
-        <translation type="unfinished"/>
+        <translation> Não apostando porque a carteira está sincronizando</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation type="unfinished"/>
+        <translation>Não estacando porque você não tem moedas maduras</translation>
     </message>
     <message numerus="yes">
         <location line="-403"/>
@@ -614,17 +614,17 @@ Este produto inclui software desenvolvido pelo Projeto OpenSSL para uso no OpenS
     <message>
         <location line="+10"/>
         <source>Last received block was generated %1.</source>
-        <translation type="unfinished"/>
+        <translation>O último bloco recebido foi gerado %1</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation type="unfinished"/>
+        <translation>Essa transação excede o limite de tamanho. Você ainda pode enviá-lo para uma taxa de %1, que vai para os nós que processam sua transação e ajuda a suportar a rede. Você quer pagar a taxa?</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Confirm transaction fee</source>
-        <translation type="unfinished"/>
+        <translation>Confirmar taxa de transação</translation>
     </message>
     <message>
         <location line="+27"/>
@@ -658,7 +658,7 @@ Endereço: %4</translation>
         <location line="-15"/>
         <location line="+15"/>
         <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
-        <translation type="unfinished"/>
+        <translation> URI não pode ser analisado! Isso pode ser causado por um endereço inválido do ShadowCoin ou por parâmetros URI malformados</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -673,12 +673,12 @@ Endereço: %4</translation>
     <message>
         <location line="+25"/>
         <source>Backup Wallet</source>
-        <translation type="unfinished"/>
+        <translation> Backup Carteira </translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Wallet Data (*.dat)</source>
-        <translation type="unfinished"/>
+        <translation>Carteira Data(*.dat)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -713,12 +713,12 @@ Endereço: %4</translation>
     <message>
         <location line="+18"/>
         <source>Not staking</source>
-        <translation type="unfinished"/>
+        <translation> Não apostando</translation>
     </message>
     <message>
         <location filename="../bitcoin.cpp" line="+109"/>
         <source>A fatal error occurred. ShadowCoin can no longer continue safely and will quit.</source>
-        <translation type="unfinished"/>
+        <translation>Ocorreu um erro fatal. ShadowCoin não pode continuar com segurança e vai fechar.</translation>
     </message>
 </context>
 <context>
@@ -998,7 +998,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+10"/>
         <source>The label associated with this address book entry</source>
-        <translation type="unfinished"/>
+        <translation>A etiqueta associado a esta entrada do catálogo de endereços</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1008,7 +1008,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+10"/>
         <source>The address associated with this address book entry. This can only be modified for sending addresses.</source>
-        <translation type="unfinished"/>
+        <translation>O endereço associado a esta entrada do catálogo de endereços. Isso só pode ser modificado para enviar endereços</translation>
     </message>
     <message>
         <location filename="../editaddressdialog.cpp" line="+20"/>
@@ -1038,7 +1038,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-5"/>
         <source>The entered address &quot;%1&quot; is not a valid ShadowCoin address.</source>
-        <translation type="unfinished"/>
+        <translation>O endereço introduzido &quot;%1&quot; não é um endereço ShadowCoin válido.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1072,7 +1072,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+1"/>
         <source>command-line options</source>
-        <translation type="unfinished"/>
+        <translation>Opção de linha de comando</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1082,12 +1082,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+1"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-        <translation type="unfinished"/>
+        <translation>Definir idioma (default: system locale)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Start minimized</source>
-        <translation type="unfinished"/>
+        <translation>Iniciar Minimizado</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1110,7 +1110,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+6"/>
         <source>Optional transaction fee per kB that helps make sure your transactions are processed quickly. Most transactions are 1 kB. Fee 0.01 recommended.</source>
-        <translation type="unfinished"/>
+        <translation>Taxa de transação opcional por kB que ajuda a garantir que suas transações sejam processadas rapidamente. A maioria das transações são de 1 kB. Taxa 0.01 recomendada.</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1120,7 +1120,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+31"/>
         <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
-        <translation type="unfinished"/>
+        <translation>O valor reservado não participa em aposta e, portanto, pode ser gasto a qualquer momento</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1326,12 +1326,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-160"/>
         <source>Stake:</source>
-        <translation type="unfinished"/>
+        <translation>Aposta:</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Unconfirmed:</source>
-        <translation type="unfinished"/>
+        <translation>Não confirmado</translation>
     </message>
     <message>
         <location line="-107"/>
@@ -1341,12 +1341,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+49"/>
         <source>Spendable:</source>
-        <translation type="unfinished"/>
+        <translation>Disponível:</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Your current spendable balance</source>
-        <translation>Seu saldo atual spendable</translation>
+        <translation>Seu saldo atual disponível</translation>
     </message>
     <message>
         <location line="+71"/>
@@ -1376,12 +1376,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-108"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</source>
-        <translation type="unfinished"/>
+        <translation type="Total de transações que ainda não foram confirmadas e ainda não contam para o saldo atual"/>
     </message>
     <message>
         <location line="-29"/>
         <source>Total of coins that was staked, and do not yet count toward the current balance</source>
-        <translation type="unfinished"/>
+        <translation>Total de moedas que foram apostadas e ainda não contam para o saldo atual</translation>
     </message>
     <message>
         <location filename="../overviewpage.cpp" line="+113"/>
@@ -2685,7 +2685,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+2"/>
         <source>Stake your coins to support network and gain reward (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Aposte suas moedas para da suporte a rede e ganhar recompensas</translation>
     </message>
     <message>
         <location line="+5"/>
