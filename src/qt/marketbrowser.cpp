@@ -12,8 +12,8 @@
 
 using namespace json_spirit;
 
-const QString kBaseUrl = "https://bzlcoin.org/marketbzl.php?market=market.usd";
-const QString kBaseUrl0 = "https://bzlcoin.org/marketbzl.php?market=market.brl";
+const QString kBaseUrl = "https://bzlcoin.org/marketbzl.php?market=bzl.usd";
+const QString kBaseUrl0 = "https://bzlcoin.org/marketbzl.php?market=bzl.brl";
 const QString kBaseUrl1 = "https://blockchain.info/tobtc?currency=USD&value=1";
 const QString kBaseUrl2 = "https://bzlcoin.org/marketbzl.php?market=bzl.capbzl.usd";
 const QString kBaseUrl3 = "https://bzlcoin.org/marketbzl.php?market=market.btc";
