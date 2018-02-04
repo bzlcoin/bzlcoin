@@ -121,9 +121,27 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
 }
 
-contains(USE_LEVELDB, 1) {
-    message(Building with LevelDB transaction index)
-    DEFINES += USE_LEVELDB
+# use: qmake "USE_LEVELDB=1" ( enabled by default; default)
+#  or: qmake "USE_LEVELDB=0" (disabled by default)
+#  or: qmake "USE_LEVELDB=-" (not supported)
+contains(USE_LEVELDB, -) {
+	message(Building with Berkeley DB transaction index)
+	
+	    SOURCES += src/txdb-bdb.cpp \
+		src/bloom.cpp \
+		src/hash.cpp \
+		src/aes_helper.c \
+		src/echo.c \
+		src/jh.c \
+		src/keccak.c
+		
+} else {
+	message(Building with LevelDB transaction index)
+	count(USE_LEVELDB, 0) {
+        USE_LEVELDB=1
+    }
+	
+	DEFINES += USE_LEVELDB	
 
     INCLUDEPATH += src/leveldb/include src/leveldb/helpers
 	LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
@@ -151,15 +169,7 @@ contains(USE_LEVELDB, 1) {
 	QMAKE_EXTRA_TARGETS += genleveldb
 	# Gross ugly hack that depends on qmake internals, unfortunately there is no other way to do it.
 	QMAKE_CLEAN += $$PWD/src/leveldb/libleveldb.a; cd $$PWD/src/leveldb ; $(MAKE) clean
-} else {
-    message(Building with Berkeley DB transaction index)
-    SOURCES += src/txdb-bdb.cpp \
-		src/bloom.cpp \
-		src/hash.cpp \
-		src/aes_helper.c \
-		src/echo.c \
-		src/jh.c \
-		src/keccak.c
+
 }
 
 # regenerate src/build.h
@@ -519,7 +529,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 -pthread
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 
