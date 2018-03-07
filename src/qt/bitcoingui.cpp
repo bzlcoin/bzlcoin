@@ -24,6 +24,7 @@
 #include "statisticspage.h"
 #include "blockbrowser.h"
 #include "marketbrowser.h"
+#include "masternodemanager.h"
 #include "mintingview.h"
 #include "multisigdialog.h"
 #include "bitcoinunits.h"
@@ -130,7 +131,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     nWeight(0)
 {
     resize(1300, 400);
-    setWindowTitle(tr("BZLCoin") + " - " + tr("Wallet"));
+    setWindowTitle(tr("Bzlcoin") + " - " + tr("Wallet"));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/bzlcoin"));
     setWindowIcon(QIcon(":icons/bzlcoin"));
@@ -171,6 +172,8 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
 	blockBrowser = new BlockBrowser(this);
 	marketBrowser = new MarketBrowser(this);
 	multisigPage = new MultisigDialog(this);
+//	richListPage = new RichListPage(this);
+//  proofOfImagePage = new ProofOfImage(this);
 	//chatWindow = new ChatWindow(this);
 	
     transactionsPage = new QWidget(this);
@@ -190,7 +193,9 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     receiveCoinsPage = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::ReceivingTab);
 
     sendCoinsPage = new SendCoinsDialog(this);
-    messagePage   = new MessagePage(this);
+    messagePage = new MessagePage(this);
+	
+	masternodeManagerPage = new MasternodeManager(this);
 
     signVerifyMessageDialog = new SignVerifyMessageDialog(this);
 
@@ -204,7 +209,10 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     centralWidget->addWidget(messagePage);
 	centralWidget->addWidget(statisticsPage);
 	centralWidget->addWidget(blockBrowser);
+	centralWidget->addWidget(masternodeManagerPage);
 	centralWidget->addWidget(marketBrowser);
+//	centralWidget->addWidget(richListPage);
+//    centralWidget->addWidget(proofOfImagePage);
 	//centralWidget->addWidget(chatWindow);
     setCentralWidget(centralWidget);
 
@@ -308,7 +316,7 @@ void BitcoinGUI::createActions()
     tabGroup->addAction(statisticsAction);
 	
 	blockAction = new QAction(QIcon(":/icons/block"), tr("&Block Explorer"), this);
-    blockAction->setToolTip(tr("Explore the BZLCoin Blockchain"));
+    blockAction->setToolTip(tr("Explore the Bzlcoin Blockchain"));
     blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     blockAction->setCheckable(true);
     tabGroup->addAction(blockAction);
@@ -325,7 +333,7 @@ void BitcoinGUI::createActions()
     //tabGroup->addAction(chatAction);
 
     sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send coins"), this);
-    sendCoinsAction->setToolTip(tr("Send coins to a BZLCoin address"));
+    sendCoinsAction->setToolTip(tr("Send coins to a Bzlcoin address"));
     sendCoinsAction->setCheckable(true);
     sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
     tabGroup->addAction(sendCoinsAction);
@@ -360,6 +368,21 @@ void BitcoinGUI::createActions()
     mintingAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
     tabGroup->addAction(mintingAction);
 	
+//	richListPageAction = new QAction(QIcon(":/icons/richlist"), tr("&Rich List"), this);
+//    richListPageAction->setToolTip(tr("Show the top Bzlcoin balances."));
+//    richListPageAction->setCheckable(true);
+//    tabGroup->addAction(richListPageAction);
+	
+	masternodeManagerAction = new QAction(QIcon(":/icons/mn"), tr("&Masternodes"), this);
+    masternodeManagerAction->setToolTip(tr("Show Bzlcoin Masternodes status and configure your nodes."));
+    masternodeManagerAction->setCheckable(true);
+    tabGroup->addAction(masternodeManagerAction);
+    
+//    proofOfImageAction = new QAction(QIcon(":/icons/data"), tr("&Proof of Data"), this);
+ //   proofOfImageAction ->setToolTip(tr("Timestamp Files on the Bzlcoin blockchain."));
+//    proofOfImageAction ->setCheckable(true);
+//    tabGroup->addAction(proofOfImageAction);
+	
 	multisigAction = new QAction(QIcon(":/icons/multi"), tr("Multisig"), this);
     tabGroup->addAction(multisigAction);
 
@@ -375,6 +398,10 @@ void BitcoinGUI::createActions()
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
 	connect(mintingAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(mintingAction, SIGNAL(triggered()), this, SLOT(gotoMintingPage()));
+//	connect(richListPageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+//    connect(richListPageAction, SIGNAL(triggered()), this, SLOT(gotoRichListPage()));
+	connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoMasternodeManagerPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -383,19 +410,21 @@ void BitcoinGUI::createActions()
     connect(messageAction, SIGNAL(triggered()), this, SLOT(gotoMessagePage()));
 	connect(multisigAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(multisigAction, SIGNAL(triggered()), this, SLOT(gotoMultisigPage()));
+//    connect(proofOfImageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+//    connect(proofOfImageAction, SIGNAL(triggered()), this, SLOT(gotoProofOfImagePage()));
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About BZLCoin"), this);
-    aboutAction->setToolTip(tr("Show information about BZLCoin"));
+    aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About Bzlcoin"), this);
+    aboutAction->setToolTip(tr("Show information about Bzlcoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setToolTip(tr("Modify configuration options for BZLCoin"));
+    optionsAction->setToolTip(tr("Modify configuration options for Bzlcoin"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
     toggleHideAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Show / Hide"), this);
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
@@ -416,7 +445,16 @@ void BitcoinGUI::createActions()
     exportAction->setToolTip(tr("Export the data in the current tab to a file"));
     openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
-
+	
+	openInfoAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Information"), this);
+    openInfoAction->setStatusTip(tr("Show diagnostic information"));
+    openGraphAction = new QAction(QIcon(":/icons/connect_4"), tr("&Network Monitor"), this);
+    openGraphAction->setStatusTip(tr("Show network monitor"));
+    openConfEditorAction = new QAction(QIcon(":/icons/edit"), tr("Open Wallet &Configuration File"), this);
+    openConfEditorAction->setStatusTip(tr("Open configuration file"));
+    openMNConfEditorAction = new QAction(QIcon(":/icons/edit"), tr("Open &Masternode Configuration File"), this);
+    openMNConfEditorAction->setStatusTip(tr("Open Masternode configuration file"));    
+	
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -429,6 +467,15 @@ void BitcoinGUI::createActions()
     connect(lockWalletAction, SIGNAL(triggered()), this, SLOT(lockWallet()));
     connect(signMessageAction, SIGNAL(triggered()), this, SLOT(gotoSignMessageTab()));
     connect(verifyMessageAction, SIGNAL(triggered()), this, SLOT(gotoVerifyMessageTab()));
+	
+	// Jump directly to tabs in RPC-console
+    connect(openInfoAction, SIGNAL(triggered()), this, SLOT(showInfo()));
+    connect(openRPCConsoleAction, SIGNAL(triggered()), this, SLOT(showConsole()));
+    connect(openGraphAction, SIGNAL(triggered()), this, SLOT(showGraph()));
+
+    // Open configs from menu
+    connect(openConfEditorAction, SIGNAL(triggered()), this, SLOT(showConfEditor()));
+    connect(openMNConfEditorAction, SIGNAL(triggered()), this, SLOT(showMNConfEditor()));
 }
 
 void BitcoinGUI::createMenuBar()
@@ -458,6 +505,14 @@ void BitcoinGUI::createMenuBar()
     settings->addAction(lockWalletAction);
     settings->addSeparator();
     settings->addAction(optionsAction);
+	
+	QMenu *tools = appMenuBar->addMenu(tr("&Tools"));
+	tools->addAction(openInfoAction);
+	tools->addAction(openRPCConsoleAction);
+	tools->addAction(openGraphAction);
+	tools->addSeparator();
+	tools->addAction(openConfEditorAction);
+	tools->addAction(openMNConfEditorAction);
 
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(openRPCConsoleAction);
@@ -484,8 +539,10 @@ void BitcoinGUI::createToolBars()
     mainToolbar->addAction(messageAction);
     mainToolbar->addAction(statisticsAction);
     mainToolbar->addAction(blockAction);
+	mainToolbar->addAction(masternodeManagerAction);
     mainToolbar->addAction(marketAction);
-    //mainToolbar->addAction(chatAction); Next release
+//	mainToolbar->addAction(richListPageAction);
+//    mainToolbar->addAction(proofOfImageAction);
 
     secondaryToolbar = addToolBar(tr("Actions toolbar"));
     secondaryToolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -497,6 +554,22 @@ void BitcoinGUI::createToolBars()
     secondaryToolbarOrientation(secondaryToolbar->orientation());
 }
 
+/*void BitcoinGUI::checkTOU()
+{
+    bool agreed_to_tou = false;
+    boost::filesystem::path pathDebug = GetDataDir() / ".agreed_to_tou";
+    if (FILE *file = fopen(pathDebug.string().c_str(), "r")) {
+        file=file;
+        fclose(file);
+        agreed_to_tou = true;
+    }
+
+    if(!agreed_to_tou){
+        TermsOfUse dlg(this);
+        dlg.exec();
+    }
+}
+*/
 void BitcoinGUI::setClientModel(ClientModel *clientModel)
 {
     this->clientModel = clientModel;
@@ -514,7 +587,7 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
 #endif
             if(trayIcon)
             {
-                trayIcon->setToolTip(tr("BZLCoin client") + QString(" ") + tr("[testnet]"));
+                trayIcon->setToolTip(tr("Bzlcoin client") + QString(" ") + tr("[testnet]"));
                 trayIcon->setIcon(QIcon(":/icons/toolbar_testnet"));
                 toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
             }
@@ -598,7 +671,7 @@ void BitcoinGUI::createTrayIcon()
     trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip(tr("BZLCoin client"));
+    trayIcon->setToolTip(tr("Bzlcoin client"));
     trayIcon->setIcon(QIcon(":/icons/toolbar"));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -670,7 +743,7 @@ void BitcoinGUI::setNumConnections(int count)
     default: icon = ":/icons/connect_4"; break;
     }
     labelConnectionsIcon->setPixmap(QIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to BZLCoin network", "", count));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bzlcoin network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
@@ -900,6 +973,63 @@ void BitcoinGUI::incomingMessage(const QModelIndex & parent, int start, int end)
     };
 }
 
+void BitcoinGUI::showDebugWindow()
+{
+    rpcConsole->showNormal();
+    rpcConsole->show();
+    rpcConsole->raise();
+    rpcConsole->activateWindow();
+}
+
+void BitcoinGUI::showInfo()
+{
+    rpcConsole->setTabFocus(RPCConsole::TAB_INFO);
+    showDebugWindow();
+}
+
+void BitcoinGUI::showConsole()
+{
+    rpcConsole->setTabFocus(RPCConsole::TAB_CONSOLE);
+    showDebugWindow();
+}
+
+void BitcoinGUI::showGraph()
+{
+    rpcConsole->setTabFocus(RPCConsole::TAB_GRAPH);
+    showDebugWindow();
+}
+
+void BitcoinGUI::showConfEditor()
+{
+    boost::filesystem::path pathConfig = GetConfigFile();
+
+    /* Open bzlcoin.conf with the associated application */
+    if (boost::filesystem::exists(pathConfig)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(pathConfig.string())));
+	} else {
+		QMessageBox::warning(this, tr("No bzlcoin.conf"),
+        tr("Your bzlcoin.conf does not exist! Please create one in your Bzlcoin data directory."),
+        QMessageBox::Ok, QMessageBox::Ok);
+	}		
+	//GUIUtil::openConfigfile();
+	
+}
+
+void BitcoinGUI::showMNConfEditor()
+{
+    boost::filesystem::path pathMNConfig = GetMasternodeConfigFile();
+
+    /* Open masternode.conf with the associated application */
+    if (boost::filesystem::exists(pathMNConfig)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(pathMNConfig.string())));
+	} else {
+		QMessageBox::warning(this, tr("No masternode.conf"),
+        tr("Your masternode.conf does not exist! Please create one in your Bzlcoin data directory."),
+        QMessageBox::Ok, QMessageBox::Ok);
+	}
+    //GUIUtil::openMNConfigfile();
+}
+
 void BitcoinGUI::gotoOverviewPage()
 {
     overviewAction->setChecked(true);
@@ -917,6 +1047,33 @@ void BitcoinGUI::gotoMarketBrowser()
     exportAction->setEnabled(false);
     disconnect(exportAction, SIGNAL(triggered()), 0, 0);
 	
+}
+
+/*void BitcoinGUI::gotoProofOfImagePage()
+{
+    proofOfImageAction->setChecked(true);
+    centralWidget->setCurrentWidget(proofOfImagePage);
+
+    exportAction->setEnabled(false);
+    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
+}
+
+void BitcoinGUI::gotoRichListPage()
+{
+    richListPageAction->setChecked(true);
+    centralWidget->setCurrentWidget(richListPage);
+
+    exportAction->setEnabled(false);
+    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
+}
+*/
+void BitcoinGUI::gotoMasternodeManagerPage()
+{
+    masternodeManagerAction->setChecked(true);
+    centralWidget->setCurrentWidget(masternodeManagerPage);
+
+    exportAction->setEnabled(false);
+    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
 }
 
 void BitcoinGUI::gotoMultisigPage()
@@ -1053,7 +1210,7 @@ void BitcoinGUI::dropEvent(QDropEvent *event)
         if (nValidUrisFound)
             gotoSendCoinsPage();
         else
-            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid BZLCoin address or malformed URI parameters."));
+            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Bzlcoin address or malformed URI parameters."));
     }
 
     event->acceptProposedAction();
@@ -1068,7 +1225,7 @@ void BitcoinGUI::handleURI(QString strURI)
         gotoSendCoinsPage();
     }
     else
-        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid BZLCoin address or malformed URI parameters."));
+        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Bzlcoin address or malformed URI parameters."));
 }
 
 void BitcoinGUI::mainToolbarOrientation(Qt::Orientation orientation)
@@ -1117,6 +1274,16 @@ void BitcoinGUI::setEncryptionStatus(int status)
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         unlockWalletAction->setVisible(false);
+        lockWalletAction->setVisible(true);
+        encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
+        break;
+    case WalletModel::UnlockedForAnonymizationOnly:
+        labelEncryptionIcon->show();
+        labelEncryptionIcon->setPixmap(QIcon(":/icons/lock_open").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for anonymization only"));
+        encryptWalletAction->setChecked(true);
+        changePassphraseAction->setEnabled(true);
+        unlockWalletAction->setVisible(true);
         lockWalletAction->setVisible(true);
         encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
         break;
@@ -1171,7 +1338,7 @@ void BitcoinGUI::unlockWallet()
     if(!walletModel)
         return;
     // Unlock wallet when requested by wallet model
-    if(walletModel->getEncryptionStatus() == WalletModel::Locked)
+    if(walletModel->getEncryptionStatus() == WalletModel::Locked || walletModel->getEncryptionStatus() == WalletModel::UnlockedForAnonymizationOnly)
     {
         AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
               AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
