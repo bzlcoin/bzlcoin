@@ -24,31 +24,31 @@ extern const std::string CLIENT_DATE;
 //
 // database format versioning
 //
-static const int DATABASE_VERSION = 51515;
+static const int DATABASE_VERSION = 71717;
 
 //
 // network protocol versioning
 //
 
-static const int PROTOCOL_VERSION = 51515;
+static const int PROTOCOL_VERSION = 71797; //-- same for masternodes version 2.0.0
 
 // intial proto version, to be increased after version/verack negotiation
-static const int INIT_PROTO_VERSION = 51515;
+static const int INIT_PROTO_VERSION = 71717;
 
 // disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION = 51515;
+static const int MIN_PEER_PROTO_VERSION = 71797;
 
-static const int MIN_INSTANTX_PROTO_VERSION = 51515;
+static const int MIN_INSTANTX_PROTO_VERSION = 71797;
 
 // Don't forget to change proto in DARKSEND.h as well!!
-static const int MIN_MN_PROTO_VERSION = 51515;
+static const int MIN_MN_PROTO_VERSION = 71797;
 
 // nTime field added to CAddress, starting with this version;
 // if possible, avoid requesting addresses nodes older than this
-static const int CADDR_TIME_VERSION = 31402;
+static const int CADDR_TIME_VERSION = 71797;
 
 // only request blocks from nodes outside this range of versions
-static const int NOBLKS_VERSION_START = 40002;
+static const int NOBLKS_VERSION_START = 70002;
 static const int NOBLKS_VERSION_END = 70006;
 
 // BIP 0031, pong message, is enabled for all versions AFTER this one
