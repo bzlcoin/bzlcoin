@@ -36,7 +36,7 @@ bool CMasternodeConfig::read(std::string& strErr) {
             strErr = "Invalid port (must be 27770 for mainnet or 27771 for testnet) detected in masternode.conf: " + line;
             streamConfig.close();
             return false;
-     
+	   }
 
         add(alias, ip, privKey, txHash, outputIndex);
     }
