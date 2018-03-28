@@ -42,8 +42,9 @@ void CActiveMasternode::ManageStatus()
             service = CService(strMasterNodeAddr);
         }
 
-        if ((service.GetPort() != 27770) && (service.GetPort() != 27771)) {
-           notCapableReason = "Masternode port not configured correctly.";
+        // Limits the masternode port to be fixed and unique
+        if (service.GetPort() != GetDefaultPort()) {
+            notCapableReason = "Masternode port not configured correctly.";
             status = MASTERNODE_NOT_CAPABLE;
             printf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason.c_str());
             return;
