@@ -32,8 +32,8 @@ bool CMasternodeConfig::read(std::string& strErr) {
             return false;
         }
 
-       if(CService(ip).GetPort() != 27771 && CService(ip).GetPort() != 27770)  {
-            strErr = "Invalid port (must be 27770 for mainnet or 27771 for testnet) detected in masternode.conf: " + line;
+       if(CService(ip).GetPort() != GetDefaultPort())  {
+            strErr = "Invalid port detected in masternode.conf: " + line;
             streamConfig.close();
             return false;
 	   }
