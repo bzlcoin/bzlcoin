@@ -20,7 +20,7 @@
 
 class CValidationState;
 
-#define BLOCK_START_MASTERNODE_PAYMENTS_TESTNET 100 // Testnet Masternode payments enabled block 81k5
+#define BLOCK_START_MASTERNODE_PAYMENTS_TESTNET 2500 // Testnet Masternode payments enabled block 81k5
 #define BLOCK_START_MASTERNODE_PAYMENTS 300000 //Mainnet Masternode payments not enabled until block 300k
 
 //#define START_MASTERNODE_PAYMENTS_TESTNET 1519430400  //Sat, 24 Feb 2018 00:00:00 GMT
@@ -108,6 +108,41 @@ inline int64_t FutureDrift(int64_t nTime) { return nTime + 10 * 60; } // up to 1
 //inline unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV2(nHeight) ? 60 : 60; }
 
 inline int64_t GetMNCollateral() { return 1000; }
+
+// Returns the collateral for MasterNodes, using the active, scalable block index collateral rules
+inline int64_t GetMNCollateralForBlock(int64_t nBlock)
+{
+    int64_t nCollateral = 1000;
+    int64_t nBlockSteps = 259200; //3 months (mainnet)
+    int64_t nBlockHeight = 0;
+
+    if (!fTestNet) {
+        //Mainnet
+        nBlockHeight = BLOCK_START_MASTERNODE_PAYMENTS;
+    } else {
+        //Testnet
+        nBlockHeight = BLOCK_START_MASTERNODE_PAYMENTS_TESTNET;
+        nBlockSteps = 1000; //
+    }
+    //written for clear reading:
+    //after MN payment block is reached, collateral becomes 1500
+    if (nBlock >= nBlockHeight) nCollateral += 500;
+    //3 months later (mainnet) -> 2000
+    nBlockHeight += nBlockSteps;
+    if (nBlock >= nBlockHeight) nCollateral += 500;
+    //+3 months later (mainnet) -> 2500
+    nBlockHeight += nBlockSteps;
+    if (nBlock >= nBlockHeight) nCollateral += 500;
+    //+3 months later (mainnet) and finally -> 3000
+    nBlockHeight += nBlockSteps;
+    if (nBlock >= nBlockHeight) nCollateral += 500;
+
+    //code safekeeper
+    if (nCollateral > 3000) nCollateral = 3000;
+
+    return nCollateral;
+}
+
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;

@@ -726,7 +726,7 @@ bool CMasternodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
             uint256 hash;
             if(GetTransaction(winner.vin.prevout.hash, tx, hash)){
                 BOOST_FOREACH(CTxOut out, tx.vout){
-                    if(out.nValue == GetMNCollateral()*COIN){
+                    if(out.nValue >= GetMNCollateral()*COIN){
                         payee = out.scriptPubKey;
             return true;
         }
