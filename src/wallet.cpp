@@ -1509,6 +1509,7 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
 
 void CWallet::AvailableCoinsMN(vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl *coinControl, AvailableCoinsType coin_type, bool useIX) const
 {
+    CBlockIndex *blockIndexAux;
     vCoins.clear();
 
     {
@@ -1551,7 +1552,8 @@ void CWallet::AvailableCoinsMN(vector<COutput>& vCoins, bool fOnlyConfirmed, con
                     found = true;
                     if (IsCollateralAmount(pcoin->vout[i].nValue)) continue; // do not use collateral amounts
                     found = !IsDenominatedAmount(pcoin->vout[i].nValue);
-                    if(found && coin_type == ONLY_NONDENOMINATED_NOTMN) found = (pcoin->vout[i].nValue != GetMNCollateralForBlock(pcoin->GetDepthInMainChain())*COIN); // do not use MN funds 1,000 BZL
+                    pcoin->GetDepthInMainChain(blockIndexAux);
+                    if(found && coin_type == ONLY_NONDENOMINATED_NOTMN) found = (pcoin->vout[i].nValue != GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN); // do not use MN funds 1,000 BZL
                 } else {
                     found = true;
                 }
@@ -2170,6 +2172,7 @@ struct CompareByPriority
 
 bool CWallet::SelectCoinsByDenominations(int nDenom, int64_t nValueMin, int64_t nValueMax, std::vector<CTxIn>& setCoinsRet, vector<COutput>& setCoinsRet2, int64_t& nValueRet, int nDarksendRoundsMin, int nDarksendRoundsMax)
 {
+    CBlockIndex *blockIndexAux;
     setCoinsRet.clear();
     nValueRet = 0;
 
@@ -2205,7 +2208,8 @@ bool CWallet::SelectCoinsByDenominations(int nDenom, int64_t nValueMin, int64_t 
     {
         //there's no reason to allow inputs less than 1 COIN into DS (other than denominations smaller than that amount)
         if(out.tx->vout[out.i].nValue < 1*COIN && out.tx->vout[out.i].nValue != (.1*COIN)+100) continue;
-        if(fMasterNode && out.tx->vout[out.i].nValue == GetMNCollateralForBlock(out.tx->GetDepthInMainChain())*COIN) continue; //masternode input 1,000 BZL
+        out.tx->GetDepthInMainChain(blockIndexAux);
+        if(fMasterNode && out.tx->vout[out.i].nValue == GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN) continue; //masternode input 1,000 BZL
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){
             bool fAccepted = false;
 
@@ -2264,6 +2268,7 @@ bool CWallet::SelectCoinsByDenominations(int nDenom, int64_t nValueMin, int64_t 
 bool CWallet::SelectCoinsDark(int64_t nValueMin, int64_t nValueMax, std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet, int nDarksendRoundsMin, int nDarksendRoundsMax) const
 {
     CCoinControl *coinControl=NULL;
+    CBlockIndex *blockIndexAux;
 
     setCoinsRet.clear();
     nValueRet = 0;
@@ -2281,7 +2286,8 @@ bool CWallet::SelectCoinsDark(int64_t nValueMin, int64_t nValueMax, std::vector<
     {
         //there's no reason to allow inputs less than 1 COIN into DS (other than denominations smaller than that amount)
         if(out.tx->vout[out.i].nValue < 1*COIN && out.tx->vout[out.i].nValue != (.1*COIN)+100) continue;
-        if(fMasterNode && out.tx->vout[out.i].nValue == GetMNCollateralForBlock(out.tx->GetDepthInMainChain())*COIN) continue; //masternode input 1,000 BZL
+        out.tx->GetDepthInMainChain(blockIndexAux);
+        if(fMasterNode && out.tx->vout[out.i].nValue == GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN) continue; //masternode input 1,000 BZL
 
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){
             CTxIn vin = CTxIn(out.tx->GetHash(),out.i);

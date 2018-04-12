@@ -20,7 +20,7 @@
 
 class CValidationState;
 
-#define BLOCK_START_MASTERNODE_PAYMENTS_TESTNET 2500 // Testnet Masternode payments enabled block 81k5
+#define BLOCK_START_MASTERNODE_PAYMENTS_TESTNET 3700 // Testnet Masternode payments enabled block 81k5
 #define BLOCK_START_MASTERNODE_PAYMENTS 300000 //Mainnet Masternode payments not enabled until block 300k
 
 //#define START_MASTERNODE_PAYMENTS_TESTNET 1519430400  //Sat, 24 Feb 2018 00:00:00 GMT

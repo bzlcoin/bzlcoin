@@ -719,6 +719,7 @@ uint64_t CMasternodePayments::CalculateScore(uint256 blockHash, CTxIn& vin)
 
 bool CMasternodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
 {
+    CBlockIndex *blockIndexAux;
     BOOST_FOREACH(CMasternodePaymentWinner& winner, vWinning){
         if(winner.nBlockHeight == nBlockHeight) {
 
@@ -726,7 +727,8 @@ bool CMasternodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
             uint256 hash;
             if(GetTransaction(winner.vin.prevout.hash, tx, hash)){
                 BOOST_FOREACH(CTxOut out, tx.vout){
-                    if(out.nValue >= GetMNCollateral()*COIN){
+                    blockIndexAux = mapBlockIndex[hash];
+                    if(out.nValue == GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN){
                         payee = out.scriptPubKey;
             return true;
         }
