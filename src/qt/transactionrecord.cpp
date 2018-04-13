@@ -78,9 +78,16 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
                     if (hashPrev == hash)
                         continue; // last coinstake output
-
+                    CAmount nValueOut = 0;
+                    BOOST_FOREACH(const CTxOut& txout, wtx.vout)
+                    {
+                        if (IsMine(*wallet,txout.scriptPubKey))
+                            nValueOut += txout.nValue;
+                        if (!MoneyRange(txout.nValue) || !MoneyRange(nValueOut))
+                            throw std::runtime_error("CTransaction::GetValueOut() : value out of range");
+                    }
                     sub.type = TransactionRecord::Generated;
-                    sub.credit = nNet > 0 ? nNet : wtx.GetValueOut() - nDebit;
+                    sub.credit = nNet > 0 ? nNet : nValueOut - nDebit;
                     hashPrev = hash;
                 }
 

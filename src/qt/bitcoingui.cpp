@@ -25,6 +25,7 @@
 #include "blockbrowser.h"
 #include "marketbrowser.h"
 #include "masternodemanager.h"
+#include "darksend.h"
 #include "mintingview.h"
 #include "multisigdialog.h"
 #include "bitcoinunits.h"
@@ -368,21 +369,12 @@ void BitcoinGUI::createActions()
     mintingAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
     tabGroup->addAction(mintingAction);
 	
-//	richListPageAction = new QAction(QIcon(":/icons/richlist"), tr("&Rich List"), this);
-//    richListPageAction->setToolTip(tr("Show the top Bzlcoin balances."));
-//    richListPageAction->setCheckable(true);
-//    tabGroup->addAction(richListPageAction);
-	
+
 	masternodeManagerAction = new QAction(QIcon(":/icons/mn"), tr("&Masternodes"), this);
     masternodeManagerAction->setToolTip(tr("Show Bzlcoin Masternodes status and configure your nodes."));
     masternodeManagerAction->setCheckable(true);
     tabGroup->addAction(masternodeManagerAction);
-    
-//    proofOfImageAction = new QAction(QIcon(":/icons/data"), tr("&Proof of Data"), this);
- //   proofOfImageAction ->setToolTip(tr("Timestamp Files on the Bzlcoin blockchain."));
-//    proofOfImageAction ->setCheckable(true);
-//    tabGroup->addAction(proofOfImageAction);
-	
+    	
 	multisigAction = new QAction(QIcon(":/icons/multi"), tr("Multisig"), this);
     tabGroup->addAction(multisigAction);
 
@@ -398,8 +390,6 @@ void BitcoinGUI::createActions()
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
 	connect(mintingAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(mintingAction, SIGNAL(triggered()), this, SLOT(gotoMintingPage()));
-//	connect(richListPageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-//    connect(richListPageAction, SIGNAL(triggered()), this, SLOT(gotoRichListPage()));
 	connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoMasternodeManagerPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -410,9 +400,6 @@ void BitcoinGUI::createActions()
     connect(messageAction, SIGNAL(triggered()), this, SLOT(gotoMessagePage()));
 	connect(multisigAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(multisigAction, SIGNAL(triggered()), this, SLOT(gotoMultisigPage()));
-//    connect(proofOfImageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-//    connect(proofOfImageAction, SIGNAL(triggered()), this, SLOT(gotoProofOfImagePage()));
-
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
@@ -541,9 +528,6 @@ void BitcoinGUI::createToolBars()
     mainToolbar->addAction(blockAction);
 	mainToolbar->addAction(masternodeManagerAction);
     mainToolbar->addAction(marketAction);
-//	mainToolbar->addAction(richListPageAction);
-//    mainToolbar->addAction(proofOfImageAction);
-
     secondaryToolbar = addToolBar(tr("Actions toolbar"));
     secondaryToolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     secondaryToolbar->addAction(exportAction);
@@ -1049,24 +1033,6 @@ void BitcoinGUI::gotoMarketBrowser()
 	
 }
 
-/*void BitcoinGUI::gotoProofOfImagePage()
-{
-    proofOfImageAction->setChecked(true);
-    centralWidget->setCurrentWidget(proofOfImagePage);
-
-    exportAction->setEnabled(false);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-}
-
-void BitcoinGUI::gotoRichListPage()
-{
-    richListPageAction->setChecked(true);
-    centralWidget->setCurrentWidget(richListPage);
-
-    exportAction->setEnabled(false);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-}
-*/
 void BitcoinGUI::gotoMasternodeManagerPage()
 {
     masternodeManagerAction->setChecked(true);
