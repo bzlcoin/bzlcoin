@@ -1980,6 +1980,7 @@ int CDarkSendPool::GetDenominationsByAmount(int64_t nAmount, int nDenomTarget){
 
 bool CDarkSendSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey){
     CScript payee2;
+    CBlockIndex *blockIndexAux;
     payee2= GetScriptForDestination(pubkey.GetID());
 
     CTransaction txVin;
@@ -1987,7 +1988,8 @@ bool CDarkSendSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey){
     //if(GetTransaction(vin.prevout.hash, txVin, hash, true)){
     if(GetTransaction(vin.prevout.hash, txVin, hash)){
         BOOST_FOREACH(CTxOut out, txVin.vout){
-            if(out.nValue == GetMNCollateral()*COIN){
+            blockIndexAux = mapBlockIndex[hash];
+            if(out.nValue >= GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN){
                 if(out.scriptPubKey == payee2) return true;
             }
         }

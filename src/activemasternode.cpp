@@ -425,6 +425,7 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
 {
     vector<COutput> vCoins;
     vector<COutput> filteredCoins;
+    CBlockIndex *blockIndexAux;
 
     // Retrieve all possible outputs
     pwalletMain->AvailableCoinsMN(vCoins);
@@ -432,7 +433,8 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
     // Filter
     BOOST_FOREACH(const COutput& out, vCoins)
     {
-        if(out.tx->vout[out.i].nValue == GetMNCollateral()*COIN) { //exactly 1,000 BZL
+        out.tx->GetDepthInMainChain(blockIndexAux);
+        if(out.tx->vout[out.i].nValue == GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN) { //exactly coins for MN at the tx block height
             filteredCoins.push_back(out);
         }
     }
@@ -447,6 +449,7 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternodeForPubKey(std::string co
     scriptPubKey.SetDestination(address.Get());
     vector<COutput> vCoins;
     vector<COutput> filteredCoins;
+    CBlockIndex *blockIndexAux;
 
     // Retrieve all possible outputs
     pwalletMain->AvailableCoins(vCoins);
@@ -454,7 +457,8 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternodeForPubKey(std::string co
     // Filter
     BOOST_FOREACH(const COutput& out, vCoins)
     {
-        if(out.tx->vout[out.i].scriptPubKey == scriptPubKey && out.tx->vout[out.i].nValue == GetMNCollateral()*COIN) { //exactly 1,000 BZL
+        out.tx->GetDepthInMainChain(blockIndexAux);
+        if(out.tx->vout[out.i].scriptPubKey == scriptPubKey && out.tx->vout[out.i].nValue == GetMNCollateralForBlock(blockIndexAux->nHeight)*COIN) { //exactly coins for MN at the tx block height
             filteredCoins.push_back(out);
         }
     }
