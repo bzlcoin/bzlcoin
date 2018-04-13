@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>623</width>
+    <width>1075</width>
     <height>505</height>
    </rect>
   </property>
@@ -67,6 +67,7 @@ font-family:'Open Sans,sans-serif';</string>
       <property name="font">
        <font>
         <family>Open Sans,sans-serif</family>
+        <pointsize>11</pointsize>
        </font>
       </property>
       <property name="autoFillBackground">
@@ -77,6 +78,10 @@ font-family:'Open Sans,sans-serif';</string>
       </property>
       <property name="text">
        <string>Refresh</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../bitcoin.qrc">
+        <normaloff>:/icons/refresh</normaloff>:/icons/refresh</iconset>
       </property>
      </widget>
      <widget class="QLabel" name="label">
@@ -173,6 +178,13 @@ font-family:'Open Sans,sans-serif';</string>
           </property>
          </widget>
         </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Net Hashrate&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
         <item row="5" column="1">
          <widget class="QLabel" name="pawrateBox">
           <property name="text">
@@ -231,14 +243,14 @@ font-family:'Open Sans,sans-serif';</string>
         <item row="9" column="0">
          <widget class="QLabel" name="label_17">
           <property name="text">
-           <string/>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Market Cap&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
         <item row="9" column="1">
          <widget class="QLabel" name="marketcap">
           <property name="text">
-           <string/>
+           <string>$0</string>
           </property>
          </widget>
         </item>
@@ -284,10 +296,31 @@ font-family:'Open Sans,sans-serif';</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_16">
+        <item row="13" column="0">
+         <widget class="QLabel" name="label_99">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Net Hashrate&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hybrid Masternode Cost&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="1">
+         <widget class="QLabel" name="mncost">
+          <property name="text">
+           <string>1,000 BZL</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <widget class="QLabel" name="label_100">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Hybrid Masternode Reward&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="1">
+         <widget class="QLabel" name="mnreward">
+          <property name="text">
+           <string>20% of PoW/PoS Block Value</string>
           </property>
          </widget>
         </item>
