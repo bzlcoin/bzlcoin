@@ -738,7 +738,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx, bool fLimitFree,
         return error("AcceptToMemoryPool : nonstandard transaction : %s\n", reason.c_str());
     
     // ----------- instantX transaction scanning -----------
-
+    /*
     BOOST_FOREACH(const CTxIn& in, tx.vin){
         if(mapLockedInputs.count(in.prevout)){
             if(mapLockedInputs[in.prevout] != tx.GetHash()){
@@ -746,6 +746,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx, bool fLimitFree,
             }
         }
     }
+    */
 
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
@@ -870,9 +871,12 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx, bool fLimitFree,
 
     SyncWithWallets(tx, NULL);
 
-    printf("mempool: AcceptToMemoryPool : accepted %s (poolsz %lu)\n",
-           hash.ToString().substr(0,10).c_str(),
-           pool.mapTx.size());
+    //Minimize debug spam
+    if (fDebug) {
+        printf("mempool: AcceptToMemoryPool : accepted %s (poolsz %lu)\n",
+               hash.ToString().substr(0,10).c_str(),
+               pool.mapTx.size());
+    }
     return true;
 }
 
@@ -903,13 +907,15 @@ bool AcceptableInputs(CTxMemPool& pool, const CTransaction &txo, bool fLimitFree
     
     // ----------- instantX transaction scanning -----------
 
+    /*
     BOOST_FOREACH(const CTxIn& in, tx.vin){
         if(mapLockedInputs.count(in.prevout)){
             if(mapLockedInputs[in.prevout] != tx.GetHash()){
                 return tx.DoS(0, error("AcceptableInputs : conflicts with existing transaction lock: %s", reason.c_str()));
             }
         }
-    }
+    }    
+    */
 
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
@@ -1164,15 +1170,18 @@ int CTxIndex::GetDepthInMainChain() const
 }
 
 // Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool s)
 {
     {
-        LOCK(cs_main);
+        if(s)
         {
+          LOCK(cs_main);
+          {
             if (mempool.lookup(hash, tx))
             {
                 return true;
             }
+          }
         }
         CTxDB txdb("r");
         CTxIndex txindex;
