@@ -87,7 +87,7 @@ void StatisticsPage::updateStatistics()
 
     QString QPeers = QString::number(peers);
     QString qVolume = QString::number(volume);
-	QString mn = "1,000 BZL";
+    QString mn = QString::number(GetMNCollateralForBlock(pindexBest->nHeight)) + " BZL";
 	QString mn2 = "20% of PoW/PoS block reward";
 	
 	ui->mncost->setText("<b><font color=\"orange\">" + mn + "</font></b>");	
