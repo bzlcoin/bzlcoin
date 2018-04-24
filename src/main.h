@@ -21,7 +21,8 @@
 class CValidationState;
 
 #define BLOCK_START_MASTERNODE_PAYMENTS_TESTNET 3700 // Testnet Masternode payments enabled block 81k5
-#define BLOCK_START_MASTERNODE_PAYMENTS 300000 //Mainnet Masternode payments not enabled until block 300k
+#define BLOCK_START_MASTERNODE_PEER_VERSION_CHECK 340000
+#define BLOCK_START_MASTERNODE_PAYMENTS 342000 //Mainnet Masternode payments not enabled until block 342k
 
 //#define START_MASTERNODE_PAYMENTS_TESTNET 1519430400  //Sat, 24 Feb 2018 00:00:00 GMT
 //#define START_MASTERNODE_PAYMENTS 1520985600  //Wed, 14 Mar 2018 00:00:00 GMT
@@ -125,15 +126,12 @@ inline int64_t GetMNCollateralForBlock(int64_t nBlock)
         nBlockSteps = 1000; //
     }
     //written for clear reading:
-    //after MN payment block is reached, collateral becomes 1500
-    if (nBlock >= nBlockHeight) nCollateral += 500;
-    //3 months later (mainnet) -> 2000
+    //after MN payment block is reached, collateral becomes 2000
+    if (nBlock >= nBlockHeight) nCollateral += 1000;
+    //3 months later (mainnet) -> 2500
     nBlockHeight += nBlockSteps;
     if (nBlock >= nBlockHeight) nCollateral += 500;
-    //+3 months later (mainnet) -> 2500
-    nBlockHeight += nBlockSteps;
-    if (nBlock >= nBlockHeight) nCollateral += 500;
-    //+3 months later (mainnet) and finally -> 3000
+    //+3 months later (mainnet) -> 3000
     nBlockHeight += nBlockSteps;
     if (nBlock >= nBlockHeight) nCollateral += 500;
 
