@@ -85,7 +85,7 @@ static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
 static const unsigned int MAX_INV_SZ = 50000;
 static const int64_t MIN_TX_FEE = 1000;
 static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const int64_t MAX_MONEY = 7000000 * COIN; // 7,000,000 BZL BZLCoin Max
+static const int64_t MAX_MONEY = 10850000 * COIN; // 10,580,000 BZL BZLCoin Max v2.0.0
 static const int64_t COIN_YEAR_REWARD = 0.06 * COIN; // 6% per year
 
 static const int64_t MAINNET_POSFIX = 300000; //Mainnet Proof of Stake update not enabled until block 300k
