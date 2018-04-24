@@ -1728,6 +1728,7 @@ build/overviewpage.moc: src/qt/overviewpage.h \
 
 build/rpcconsole.moc: src/qt/rpcconsole.h \
 		build/ui_rpcconsole.h \
+		src/qt/trafficgraphwidget.h \
 		src/qt/clientmodel.h \
 		src/bitcoinrpc.h \
 		src/json/json_spirit_reader_template.h \
@@ -2227,6 +2228,9 @@ build/addresstablemodel.o: src/qt/addresstablemodel.cpp src/qt/addresstablemodel
 
 build/optionsdialog.o: src/qt/optionsdialog.cpp src/qt/optionsdialog.h \
 		build/ui_optionsdialog.h \
+		src/qt/bitcoinamountfield.h \
+		src/qt/qvalidatedlineedit.h \
+		src/qt/qvaluecombobox.h \
 		src/qt/bitcoinunits.h \
 		src/qt/monitoreddatamapper.h \
 		src/netbase.h \
@@ -2301,6 +2305,7 @@ build/sendcoinsdialog.o: src/qt/sendcoinsdialog.cpp src/qt/sendcoinsdialog.h \
 
 build/coincontroldialog.o: src/qt/coincontroldialog.cpp src/qt/coincontroldialog.h \
 		build/ui_coincontroldialog.h \
+		src/qt/coincontroltreewidget.h \
 		src/init.h \
 		src/wallet.h \
 		src/main.h \
@@ -2372,6 +2377,7 @@ build/addressbookpage.o: src/qt/addressbookpage.cpp src/qt/addressbookpage.h \
 
 build/signverifymessagedialog.o: src/qt/signverifymessagedialog.cpp src/qt/signverifymessagedialog.h \
 		build/ui_signverifymessagedialog.h \
+		src/qt/qvalidatedlineedit.h \
 		src/qt/addressbookpage.h \
 		src/base58.h \
 		src/bignum.h \
@@ -2783,6 +2789,7 @@ build/multisigaddressentry.o: src/qt/multisigaddressentry.cpp src/qt/addressbook
 		src/qt/guiutil.h \
 		src/qt/multisigaddressentry.h \
 		build/ui_multisigaddressentry.h \
+		src/qt/qvalidatedlineedit.h \
 		src/qt/walletmodel.h \
 		src/instantx.h \
 		src/net.h \
@@ -2831,6 +2838,7 @@ build/multisiginputentry.o: src/qt/multisiginputentry.cpp src/base58.h \
 		src/stealth.h \
 		src/qt/multisiginputentry.h \
 		build/ui_multisiginputentry.h \
+		src/qt/qvalidatedlineedit.h \
 		src/main.h \
 		src/core.h \
 		src/net.h \
@@ -4513,6 +4521,8 @@ build/crypter.o: src/crypter.cpp src/crypter.h \
 
 build/sendcoinsentry.o: src/qt/sendcoinsentry.cpp src/qt/sendcoinsentry.h \
 		build/ui_sendcoinsentry.h \
+		src/qt/bitcoinamountfield.h \
+		src/qt/qvalidatedlineedit.h \
 		src/qt/guiutil.h \
 		src/qt/bitcoinunits.h \
 		src/qt/addressbookpage.h \
@@ -4653,6 +4663,7 @@ build/qtipcserver.o: src/qt/qtipcserver.cpp src/qt/qtipcserver.h \
 
 build/rpcconsole.o: src/qt/rpcconsole.cpp src/qt/rpcconsole.h \
 		build/ui_rpcconsole.h \
+		src/qt/trafficgraphwidget.h \
 		src/qt/clientmodel.h \
 		src/bitcoinrpc.h \
 		src/json/json_spirit_reader_template.h \
@@ -4692,9 +4703,9 @@ build/trafficgraphwidget.o: src/qt/trafficgraphwidget.cpp src/qt/trafficgraphwid
 
 build/messagepage.o: src/qt/messagepage.cpp src/qt/messagepage.h \
 		build/ui_messagepage.h \
-		src/qt/sendmessagesdialog.h \
 		src/qt/plugins/mrichtexteditor/mrichtextedit.h \
 		build/ui_mrichtextedit.h \
+		src/qt/sendmessagesdialog.h \
 		src/qt/messagemodel.h \
 		src/uint256.h \
 		src/allocators.h \
@@ -4803,6 +4814,7 @@ build/messagemodel.o: src/qt/messagemodel.cpp src/qt/guiutil.h \
 
 build/sendmessagesdialog.o: src/qt/sendmessagesdialog.cpp src/qt/sendmessagesdialog.h \
 		build/ui_sendmessagesdialog.h \
+		src/qt/qvalidatedlineedit.h \
 		src/qt/walletmodel.h \
 		src/allocators.h \
 		src/instantx.h \
@@ -4855,6 +4867,8 @@ build/sendmessagesdialog.o: src/qt/sendmessagesdialog.cpp src/qt/sendmessagesdia
 
 build/sendmessagesentry.o: src/qt/sendmessagesentry.cpp src/qt/sendmessagesentry.h \
 		build/ui_sendmessagesentry.h \
+		src/qt/qvalidatedlineedit.h \
+		src/qt/qvalidatedtextedit.h \
 		src/qt/guiutil.h \
 		src/qt/addressbookpage.h \
 		src/qt/walletmodel.h \
