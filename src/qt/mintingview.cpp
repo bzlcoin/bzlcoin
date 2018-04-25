@@ -166,7 +166,7 @@ void MintingView::setModel(WalletModel *model)
         mintingView->horizontalHeader()->resizeSection(
             MintingTableModel::Address, 335);
         mintingView->horizontalHeader()->resizeSection(
-            MintingTableModel::TxHash, 445);
+            MintingTableModel::TxHash, 545);
     }
 }
 

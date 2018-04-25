@@ -45,6 +45,9 @@ namespace Checkpoints
     static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
         ( 0, hashGenesisBlockTestNet )
+		( 1,      uint256("0x00003a7d33245d7f77d36f9d2e52ce8ed2e632b29cf2f63e373da6acdaffbc24") )
+		( 20,     uint256("0x00000233efa735e71d19f78c533a97914f8acc56dfe5155014e0aaa77f969b1c") ) 
+		
     ;
 
     bool CheckHardened(int nHeight, const uint256& hash)
@@ -311,7 +314,7 @@ namespace Checkpoints
 
         std::vector<unsigned char> vchPrivKey = ParseHex(strPrivKey);
         CKey key;
-        key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end())); // if key is not correct openssl may crash
+        key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end()),false); // if key is not correct openssl may crash
         if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
             return false;
 
@@ -335,7 +338,7 @@ namespace Checkpoints
             return error("SendSyncCheckpoint: Checkpoint master key unavailable.");
         std::vector<unsigned char> vchPrivKey = ParseHex(CSyncCheckpoint::strMasterPrivKey);
         CKey key;
-        key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end())); // if key is not correct openssl may crash
+        key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end()), false); // if key is not correct openssl may crash
         if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
             return error("SendSyncCheckpoint: Unable to sign checkpoint, check private key?");
 
@@ -374,9 +377,7 @@ std::string CSyncCheckpoint::strMasterPrivKey = "";
 // ppcoin: verify signature of sync-checkpoint message
 bool CSyncCheckpoint::CheckSignature()
 {
-    CKey key;
-    if (!key.SetPubKey(ParseHex(CSyncCheckpoint::strMasterPubKey)))
-        return error("CSyncCheckpoint::CheckSignature() : SetPubKey failed");
+    CPubKey key(ParseHex(CSyncCheckpoint::strMasterPubKey));
     if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
         return error("CSyncCheckpoint::CheckSignature() : verify signature failed");
 
@@ -402,7 +403,8 @@ bool CSyncCheckpoint::ProcessSyncCheckpoint(CNode* pfrom)
         // Ask this guy to fill in what we're missing
         if (pfrom)
         {
-            pfrom->PushGetBlocks(pindexBest, hashCheckpoint);
+            //pfrom->PushGetBlocks(pindexBest, hashCheckpoint);
+            PushGetBlocks(pfrom, pindexBest, hashCheckpoint);
             // ask directly as well in case rejected earlier by duplicate
             // proof-of-stake because getblocks may not get it this time
             pfrom->AskFor(CInv(MSG_BLOCK, mapOrphanBlocks.count(hashCheckpoint)? WantedByOrphan(mapOrphanBlocks[hashCheckpoint]) : hashCheckpoint));

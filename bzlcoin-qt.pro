@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = BZLCoin
-VERSION = 1.0.2
+VERSION = 2.0.0
 INCLUDEPATH += src src/json src/qt src/qt/plugins/mrichtexteditor
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
@@ -12,7 +12,7 @@ lessThan(QT_MAJOR_VERSION, 5): CONFIG += static
 QMAKE_CXXFLAGS = -fpermissive
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
+    QT += widgets printsupport
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0
 }
 
@@ -141,7 +141,7 @@ contains(USE_LEVELDB, -) {
         USE_LEVELDB=1
     }
 	
-	DEFINES += USE_LEVELDB	
+	DEFINES += USE_LEVELDB
 
     INCLUDEPATH += src/leveldb/include src/leveldb/helpers
 	LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
@@ -239,16 +239,23 @@ HEADERS += src/qt/bitcoingui.h \
     src/strlcpy.h \
     src/smessage.h \
     src/main.h \
+	src/core.h \
     src/miner.h \
     src/net.h \
     src/key.h \
     src/db.h \
     src/txdb.h \
+	src/txmempool.h \
     src/walletdb.h \
     src/script.h \
     src/stealth.h \
+	src/darksend.h \
+	src/activemasternode.h \
+	src/instantx.h \
+	src/masternode.h \
+	src/masternodeconfig.h \
+	src/spork.h \
     src/init.h \
-    src/irc.h \
     src/mruset.h \
     src/json/json_spirit_writer_template.h \
     src/json/json_spirit_writer.h \
@@ -292,6 +299,10 @@ HEADERS += src/qt/bitcoingui.h \
 	src/qt/blockbrowser.h \
 	src/qt/statisticspage.h \
 	src/qt/marketbrowser.h \
+	src/qt/darksendconfig.h \
+	src/qt/masternodemanager.h \
+    src/qt/addeditadrenalinenode.h \
+    src/qt/adrenalinenodeconfigdialog.h \
     src/version.h \
 	src/bloom.h \
     src/netbase.h \
@@ -303,6 +314,7 @@ HEADERS += src/qt/bitcoingui.h \
 	src/sph_jh.h \
     src/sph_types.h \
     src/threadsafety.h \
+	src/eccryptoverify.h \
     src/qt/messagepage.h \
     src/qt/messagemodel.h \
     src/qt/sendmessagesdialog.h \
@@ -334,6 +346,7 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/multisiginputentry.cpp \
     src/qt/multisigdialog.cpp \
     src/alert.cpp \
+	src/base58.cpp \
     src/version.cpp \
     src/sync.cpp \
     src/smessage.cpp \
@@ -342,13 +355,15 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/key.cpp \
     src/script.cpp \
     src/main.cpp \
+	src/core.cpp \
     src/miner.cpp \
     src/init.cpp \
     src/net.cpp \
-    src/irc.cpp \
     src/checkpoints.cpp \
     src/addrman.cpp \
     src/db.cpp \
+	src/txmempool.cpp \
+	src/eccryptoverify.cpp \
     src/walletdb.cpp \
     src/qt/clientmodel.cpp \
     src/qt/guiutil.cpp \
@@ -369,6 +384,7 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/rpcnet.cpp \
     src/rpcmining.cpp \
     src/rpcwallet.cpp \
+	src/rpcdarksend.cpp \
     src/rpcblockchain.cpp \
     src/rpcrawtransaction.cpp \
     src/rpcsmessage.cpp \
@@ -391,6 +407,10 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/sendmessagesentry.cpp \
     src/qt/qvalidatedtextedit.cpp \
     src/qt/plugins/mrichtexteditor/mrichtextedit.cpp \
+	src/qt/darksendconfig.cpp \
+	src/qt/masternodemanager.cpp \
+    src/qt/addeditadrenalinenode.cpp \
+    src/qt/adrenalinenodeconfigdialog.cpp \
     src/noui.cpp \
     src/kernel.cpp \
     src/scrypt-arm.S \
@@ -398,7 +418,13 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/scrypt-x86_64.S \
     src/scrypt.cpp \
     src/pbkdf2.cpp \
-    src/stealth.cpp
+    src/stealth.cpp \
+	src/darksend.cpp \
+	src/activemasternode.cpp \
+	src/instantx.cpp \
+	src/masternode.cpp \
+	src/masternodeconfig.cpp \
+	src/spork.cpp
 
 #### BZL sources
 
@@ -424,6 +450,10 @@ FORMS += \
 	src/qt/forms/statisticspage.ui \
 	src/qt/forms/blockbrowser.ui \
 	src/qt/forms/marketbrowser.ui \
+	src/qt/forms/darksendconfig.ui \
+    src/qt/forms/masternodemanager.ui \
+    src/qt/forms/addeditadrenalinenode.ui \
+    src/qt/forms/adrenalinenodeconfigdialog.ui \
 	src/qt/forms/multisigaddressentry.ui \
     src/qt/forms/multisiginputentry.ui \
     src/qt/forms/multisigdialog.ui \
@@ -529,7 +559,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 -pthread
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 

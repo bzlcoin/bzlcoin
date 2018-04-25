@@ -13,6 +13,7 @@ class WalletModel;
 class MessageModel;
 class TransactionView;
 class MintingView;
+class MasternodeManager;
 class MultisigDialog;
 class OverviewPage;
 class AddressBookPage;
@@ -76,6 +77,7 @@ public:
         functionality.
     */
     void setMessageModel(MessageModel *messageModel);
+    void checkTOU();
 
 protected:
     void changeEvent(QEvent *e);
@@ -97,6 +99,7 @@ private:
     QWidget *transactionsPage;
 	QWidget *mintingPage;
 	MultisigDialog *multisigPage;
+	MasternodeManager *masternodeManagerPage;
     AddressBookPage *addressBookPage;
     AddressBookPage *receiveCoinsPage;
     MessagePage *messagePage;
@@ -121,6 +124,7 @@ private:
     QAction *historyAction;
 	QAction *mintingAction;
 	QAction *multisigAction;
+	QAction *masternodeManagerAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
     QAction *addressBookAction;
@@ -139,6 +143,11 @@ private:
     QAction *lockWalletAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
+	
+	QAction *openInfoAction;
+    QAction *openGraphAction;
+    QAction *openConfEditorAction;
+    QAction *openMNConfEditorAction;
 
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
@@ -209,6 +218,8 @@ private slots:
     void gotoSendCoinsPage();
     /** Switch to message page */
     void gotoMessagePage();
+	/** Switch to masternode manager page */
+	void gotoMasternodeManagerPage();
 	
     //void gotoChatPage();
 
@@ -216,6 +227,19 @@ private slots:
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
+	
+    /** Show debug window */
+    void showDebugWindow();
+	
+	/** Show debug window and set focus to the appropriate tab */
+    void showInfo();
+    void showConsole();
+    void showGraph();
+
+    /** Open external (default) editor with bzlcoin.conf */
+    void showConfEditor();
+    /** Open external (default) editor with masternode.conf */
+    void showMNConfEditor();
 
     /** Show configuration dialog */
     void optionsClicked();
