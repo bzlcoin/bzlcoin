@@ -16,7 +16,7 @@ BZLCoin [BZL] is an anonymous, untraceable, energy efficient, Proof-of-Work (New
 
 Specifications
 ==========================
-* Total number of coins: 7,000,000 BZL
+* Total number of coins: 10,850,000 BZL
 * Ideal block time: 30 seconds
 * Stake interest: 6% annual static inflation
 * Confirmations: 10 blocks
@@ -24,12 +24,26 @@ Specifications
 * Min stake age: 8 hours
 * RPC Port: 7771
 
+
+Masternode Specifications
+==========================
+* Masternode Port: 27777
+* Hybrid Masternode Reward: 20% of current block reward
+
+* Cost of Hybrid Masternode:
+	**Initial collateral value = 1000 BZL
+	**After the first month (86400 blocks) increase 1000 BLZ
+	**After that every 3 months ( 259200 blocks ) increases 500BZL.
+	**Maximum value collateral 3000 BZL
+
+
+
 Technology
 ==========================
+* Masternodes
 * Stealth addresses
 * Encrypted Messaging
-* Fast 60 Second Block Times
-* New Tribus PoW Algorithm comprising of 3 NIST5 algos
+* Fast 30 Second Block Times
 * Tribus PoW/PoS Hybrid
 * Full decentralization
 
