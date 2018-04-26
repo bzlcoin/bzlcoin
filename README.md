@@ -2,7 +2,7 @@
 Tribus Algo PoW/PoS Hybrid Cryptocurrency
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-![logo](https://i.imgur.com/X9KLdPr.png)
+![logo](https://i.imgur.com/DeEvKXo.png?1)
 
 Intro
 ==========================
