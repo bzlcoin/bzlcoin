@@ -158,6 +158,13 @@ private:
     QMovie *syncIconMovie;
 
     uint64_t nWeight;
+    int prevBlocks;
+    int spinnerFrame;
+
+    int64_t nClientUpdateTime;
+    int nBlocksInLastPeriod;
+    int nLastBlocks;
+    int nBlocksPerSec;
 
     /** Create the main UI actions. */
     void createActions();

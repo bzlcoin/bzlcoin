@@ -51,27 +51,6 @@ enum Checkpoints::CPMode CheckpointsMode;
 // Shutdown
 //
 
-bool ShutdownRequested()
-{
-    return fRequestShutdown;
-}
-
-void WaitForShutdown(boost::thread_group* threadGroup)
-{
-    bool fShutdown = ShutdownRequested();
-    // Tell the main threads to shutdown.
-    while (!fShutdown)
-    {
-        MilliSleep(200);
-        fShutdown = ShutdownRequested();
-    }
-    if (threadGroup)
-    {
-        threadGroup->interrupt_all();
-        threadGroup->join_all();
-    }
-}
-
 void ExitTimeout(void* parg)
 {
 #ifdef WIN32
@@ -89,7 +68,6 @@ void StartShutdown()
     // Without UI, Shutdown() can simply be started in a new thread
     NewThread(Shutdown, NULL);
 #endif
-    fRequestShutdown = true;
 }
 
 void Shutdown(void* parg)
@@ -164,9 +142,6 @@ void HandleSIGHUP(int)
 #if !defined(QT_GUI)
 bool AppInit(int argc, char* argv[])
 {
-    
-    boost::thread_group threadGroup;
-    
     bool fRet = false;
     try
     {
@@ -232,7 +207,7 @@ bool AppInit(int argc, char* argv[])
     }
 #endif
 
-        fRet = AppInit2(threadGroup);
+        fRet = AppInit2();
     }
     catch (std::exception& e) {
         PrintException(&e, "AppInit()");
@@ -242,16 +217,8 @@ bool AppInit(int argc, char* argv[])
     //if (!fRet)
         //Shutdown(NULL);
     if (!fRet)
-    {
-        threadGroup.interrupt_all();
-        // threadGroup.join_all(); was left out intentionally here, because we didn't re-test all of
-        // the startup-failure cases to make sure they don't result in a hang due to some
-        // thread-blocking-waiting-for-another-thread-during-startup case
-    } else {
-        WaitForShutdown(&threadGroup);
-    }
-    Shutdown(NULL);
-    return fRet;
+      Shutdown(NULL);
+      return fRet;
 }
 
 extern void noui_connect();
@@ -312,7 +279,7 @@ std::string HelpMessage()
         "  -socks=<n>             " + _("Select the version of socks proxy to use (4-5, default: 5)") + "\n" +
         "  -tor=<ip:port>         " + _("Use proxy to reach tor hidden services (default: same as -proxy)") + "\n"
         "  -dns                   " + _("Allow DNS lookups for -addnode, -seednode and -connect") + "\n" +
-        "  -port=<port>           " + _("Listen for connections on <port> (default: 27776 or testnet: 27777)") + "\n" +
+        "  -port=<port>           " + _("Listen for connections on <port> (default: 27777 or testnet: 27776)") + "\n" +
         "  -maxconnections=<n>    " + _("Maintain at most <n> connections to peers (default: 125)") + "\n" +
         "  -addnode=<ip>          " + _("Add a node to connect to and attempt to keep the connection open") + "\n" +
         "  -connect=<ip>          " + _("Connect only to the specified node(s)") + "\n" +
@@ -383,24 +350,15 @@ std::string HelpMessage()
         "  -rpcsslcertificatechainfile=<file.cert>  " + _("Server certificate file (default: server.cert)") + "\n" +
         "  -rpcsslprivatekeyfile=<file.pem>         " + _("Server private key (default: server.pem)") + "\n" +
         "  -rpcsslciphers=<ciphers>                 " + _("Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)") + "\n" +
-        "  -litemode=<n>          " + _("Disable all Masternode and Darksend related functionality (0-1, default: 0)") + "\n" +
+
         "\n" + _("Masternode options:") + "\n" +
         "  -masternode=<n>            " + _("Enable the client to act as a masternode (0-1, default: 0)") + "\n" +
         "  -mnconf=<file>             " + _("Specify masternode configuration file (default: masternode.conf)") + "\n" +
+        "  -mnconflock=<n>            " + _("Lock masternodes from masternode configuration file (default: 1)") +
         "  -masternodeprivkey=<n>     " + _("Set the masternode private key") + "\n" +
         "  -masternodeaddr=<n>        " + _("Set external address:port to get to this masternode (example: address:port)") + "\n" +
         "  -masternodeminprotocol=<n> " + _("Ignore masternodes less than version (example: 70007; default : 0)") + "\n" +
 
-        "\n" + _("Darksend options:") + "\n" +
-        "  -enabledarksend=<n>          " + _("Enable use of automated darksend for funds stored in this wallet (0-1, default: 0)") + "\n" +
-        "  -darksendrounds=<n>          " + _("Use N separate masternodes to anonymize funds  (2-8, default: 2)") + "\n" +
-        "  -anonymizebzlcoinamount=<n> " + _("Keep N Bzlcoin anonymized (default: 0)") + "\n" +
-        "  -liquidityprovider=<n>       " + _("Provide liquidity to Darksend by infrequently mixing coins on a continual basis (0-100, default: 0, 1=very frequent, high fees, 100=very infrequent, low fees)") + "\n" +
-
-        "\n" + _("InstantX options:") + "\n" +
-        "  -enableinstantx=<n>    " + _("Enable instantx, show confirmations for locked transactions (bool, default: true)") + "\n" +
-        "  -instantxdepth=<n>     " + _("Show N confirmations for a successfully locked transaction (0-9999, default: 1)") + "\n" +
-        
         "\n" + _("Secure messaging options:") + "\n" +
         "  -nosmsg                                  " + _("Disable secure messaging.") + "\n" +
         "  -debugsmsg                               " + _("Log extra debug messages.") + "\n" +
@@ -429,7 +387,7 @@ bool InitSanityCheck(void)
 /** Initialize bitcoin.
  *  @pre Parameters should be parsed and config file should be read.
  */
-bool AppInit2(boost::thread_group& threadGroup)
+bool AppInit2()
 {
     // ********************************************************* Step 1: setup
 #ifdef _MSC_VER
@@ -477,7 +435,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     nNodeLifespan = GetArg("-addrlifespan", 7);
     fUseFastIndex = GetBoolArg("-fastindex", true);
-    nMinerSleep = GetArg("-minersleep", 500);
+    nMinerSleep = GetArg("-minersleep", 30000);
 
     CheckpointsMode = Checkpoints::STRICT;
     std::string strCpMode = GetArg("-cppolicy", "strict");
@@ -633,7 +591,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     printf("Default data directory %s\n", GetDefaultDataDir().string().c_str());
     printf("Used data directory %s\n", strDataDir.c_str());
     std::ostringstream strErrors;
-    
+
     if (mapArgs.count("-masternodepaymentskey")) // masternode payments priv key
     {
         if (!masternodePayments.SetPrivKey(GetArg("-masternodepaymentskey", "")))
@@ -983,17 +941,19 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     printf("Loaded %i addresses from peers.dat  %"PRId64"ms\n",
            addrman.size(), GetTimeMillis() - nStart);
-    
-    
+
+
     // ********************************************************* Step 10.1: startup secure messaging
-    
+
     SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain"));
-    
+
     // ********************************************************* Step 11: start node
-    
+
     if (!CheckDiskSpace())
-        return false;
-    
+    {
+        return InitError(_("Error: not enough disk space to start Bzlcoin."));
+    }
+
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
     
@@ -1030,76 +990,55 @@ bool AppInit2(boost::thread_group& threadGroup)
         }
     }
 
-    fEnableDarksend = GetBoolArg("-enabledarksend", false);
-
-    nDarksendRounds = GetArg("-darksendrounds", 2);
-    if(nDarksendRounds > 16) nDarksendRounds = 16;
-    if(nDarksendRounds < 1) nDarksendRounds = 1;
-
-    nLiquidityProvider = GetArg("-liquidityprovider", 0); //0-100
-    if(nLiquidityProvider != 0) {
-        darkSendPool.SetMinBlockSpacing(std::min(nLiquidityProvider,100)*15);
-        fEnableDarksend = true;
-        nDarksendRounds = 99999;
+    if(GetBoolArg("-mnconflock", true) && pwalletMain) {
+        LOCK(pwalletMain->cs_wallet);
+        printf("Locking Masternodes:\n");
+        uint256 mnTxHash;
+        int outputIndex;
+        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+            mnTxHash.SetHex(mne.getTxHash());
+            outputIndex = boost::lexical_cast<unsigned int>(mne.getOutputIndex());
+            COutPoint outpoint = COutPoint(mnTxHash, outputIndex);
+            // don't lock non-spendable outpoint (i.e. it's already spent or it's not from this wallet at all)
+            if(pwalletMain->IsMine(CTxIn(outpoint)) != ISMINE_SPENDABLE) {
+                printf("  %s %s - IS NOT SPENDABLE, was not locked\n", mne.getTxHash().c_str(), mne.getOutputIndex().c_str());
+                continue;
+            }
+            pwalletMain->LockCoin(outpoint);
+            printf("  %s %s - locked successfully\n", mne.getTxHash().c_str(), mne.getOutputIndex().c_str());
+        }
     }
 
-    nAnonymizeBzlcoinAmount = GetArg("-anonymizebzlcoinamount", 0);
-    if(nAnonymizeBzlcoinAmount > 999999) nAnonymizeBzlcoinAmount = 999999;
-    if(nAnonymizeBzlcoinAmount < 2) nAnonymizeBzlcoinAmount = 2;
 
-    bool fEnableInstantX = GetBoolArg("-enableinstantx", true);
-    if(fEnableInstantX){
-        nInstantXDepth = GetArg("-instantxdepth", 5);
-        if(nInstantXDepth > 60) nInstantXDepth = 60;
-        if(nInstantXDepth < 0) nAnonymizeBzlcoinAmount = 0;
-    } else {
-        nInstantXDepth = 0;
+    // Add any masternode.conf masternodes to the adrenaline nodes
+    BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries())
+    {
+        CAdrenalineNodeConfig c(mne.getAlias(), mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex());
+        CWalletDB walletdb(strWalletFileName);
+
+        // add it to wallet db if doesn't exist already
+        if (!walletdb.ReadAdrenalineNodeConfig(c.sAddress, c))
+        {
+            if (!walletdb.WriteAdrenalineNodeConfig(c.sAddress, c))
+                printf("Could not add masternode config %s to adrenaline nodes.", c.sAddress.c_str());
+        }
+        // add it to adrenaline nodes if it doesn't exist already
+        if (!pwalletMain->mapMyAdrenalineNodes.count(c.sAddress))
+            pwalletMain->mapMyAdrenalineNodes.insert(make_pair(c.sAddress, c));
+
+        uiInterface.NotifyAdrenalineNodeChanged(c);
     }
 
-    //lite mode disables all Masternode and Darksend related functionality
-    fLiteMode = GetBoolArg("-litemode", false);
-    if(fMasterNode && fLiteMode){
-        return InitError("You can not start a masternode in litemode");
-    }
-
-    printf("fLiteMode %d\n", fLiteMode);
-    printf("fEnableDarksend %d\n", fEnableDarksend);
-    printf("fMasterNode %d\n", fMasterNode);
-    printf("nInstantXDepth %d\n", nInstantXDepth);
-    printf("Darksend rounds %d\n", nDarksendRounds);
-    printf("Anonymize Bzlcoin Amount %d\n", nAnonymizeBzlcoinAmount);
-
-    /* Denominations
-       A note about convertability. Within Darksend pools, each denomination
-       is convertable to another.
-       For example:
-       1BZL+1000 == (.1BZL+100)*10
-       10BZL+10000 == (1BZL+1000)*10
-    */
-    darkSendDenominations.push_back( (100000      * COIN)+100000000 );    
-    darkSendDenominations.push_back( (10000       * COIN)+10000000 );
-    darkSendDenominations.push_back( (1000        * COIN)+1000000 );
-    darkSendDenominations.push_back( (100         * COIN)+100000 );
-    darkSendDenominations.push_back( (10          * COIN)+10000 );
-    darkSendDenominations.push_back( (1           * COIN)+1000 );
-    darkSendDenominations.push_back( (.1          * COIN)+100 );
-    /* Disabled till we need them
-    darkSendDenominations.push_back( (.01      * COIN)+10 );
-    darkSendDenominations.push_back( (.001     * COIN)+1 );
-    */
-
-    darkSendPool.InitCollateralAddress();
-
-    threadGroup.create_thread(boost::bind(&ThreadCheckDarkSendPool));
-
+    //Threading still needs reworking
+    NewThread(ThreadCheckDarkSendPool, NULL);
 
     RandAddSeedPerfmon();
-    
-    
+
     // reindex addresses found in blockchain
     if(GetBoolArg("-reindexaddr", false))
     {
         uiInterface.InitMessage(_("Rebuilding address index..."));
+        nStart = GetTimeMillis();
         CBlockIndex *pblockAddrIndex = pindexBest;
     CTxDB txdbAddr("rw");
     while(pblockAddrIndex)
@@ -1111,6 +1050,9 @@ bool AppInit2(boost::thread_group& threadGroup)
             pblockAddr.RebuildAddressIndex(txdbAddr);
         pblockAddrIndex = pblockAddrIndex->pprev;
     }
+
+    printf("Rebuilt address index of %i blocks in %"PRId64"ms\n",
+           pblockAddrIndex->nHeight, GetTimeMillis() - nStart);
     }
 
     //// debug print
@@ -1136,15 +1078,6 @@ bool AppInit2(boost::thread_group& threadGroup)
 
      // Add wallet transactions that aren't already in a block to mapTransactions
     pwalletMain->ReacceptWalletTransactions();
-    
-    if (pwalletMain) {
-    BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
-    {
-        uiInterface.NotifyAdrenalineNodeChanged(adrenaline.second);
-    }
-        // Run a thread to flush wallet periodically
-        //threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
-    }
 
 #if !defined(QT_GUI)
     // Loop until process is exit()ed from shutdown() function,

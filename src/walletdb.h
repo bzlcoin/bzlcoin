@@ -84,20 +84,31 @@ public:
     int nVersion;
     std::string sAlias;
     std::string sAddress;
-    std::string sCollateralAddress;
     std::string sMasternodePrivKey;
+    std::string sTxHash;
+    std::string sOutputIndex;
 
     CAdrenalineNodeConfig()
     {
 	nVersion = 0;
     }
 
+    CAdrenalineNodeConfig(std::string alias, std::string address, std::string privKey, std::string txHash, std::string outputIndex) {
+        nVersion = 0;
+        sAlias = alias;
+        sAddress = address;
+        sMasternodePrivKey = privKey;
+        sTxHash = txHash;
+        sOutputIndex = outputIndex;
+    }
+
     IMPLEMENT_SERIALIZE(
         READWRITE(nVersion);
         READWRITE(sAlias);
         READWRITE(sAddress);
-        READWRITE(sCollateralAddress);
-	READWRITE(sMasternodePrivKey);
+        READWRITE(sMasternodePrivKey);
+        READWRITE(sTxHash);
+        READWRITE(sOutputIndex);
     )
 };
 
@@ -140,6 +151,9 @@ public:
 
     bool EraseName(const std::string& strAddress);
 
+    bool WritePurpose(const std::string& strAddress, const std::string& purpose);
+    bool ErasePurpose(const std::string& strAddress);
+
     bool WriteTx(uint256 hash, const CWalletTx& wtx)
     {
         nWalletDBUpdated++;
@@ -180,13 +194,10 @@ public:
 	bool WriteAdrenalineNodeConfig(std::string sAlias, const CAdrenalineNodeConfig& nodeConfig);
     bool ReadAdrenalineNodeConfig(std::string sAlias, CAdrenalineNodeConfig& nodeConfig);
     bool EraseAdrenalineNodeConfig(std::string sAlias);
-    
-    bool WriteWatchOnly(const CTxDestination &dest)
-    {
-        nWalletDBUpdated++;
-        return Write(std::make_pair(std::string("watch"), CBitcoinAddress(dest).ToString()), '1');
-    }
-    
+
+    bool WriteWatchOnly(const CScript &script);
+    bool EraseWatchOnly(const CScript &script);
+
     bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata &keyMeta)
     {
         nWalletDBUpdated++;

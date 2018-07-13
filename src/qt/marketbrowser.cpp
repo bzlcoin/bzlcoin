@@ -139,7 +139,7 @@ if (what == kBaseUrl1) // Bitcoin Price
     // QNetworkReply is a QIODevice. So we read from it just like it was a file
     QString bitcoin = finished->readAll();
     bitcoin2 = (1 / bitcoin.toDouble());
-    bitcoin = QString::number(bitcoin2);
+    bitcoin = QString::number(bitcoin2, 'f', 2);
     if(bitcoin > bitcoinp)
     {
         ui->bitcoin->setText("<font color=\"yellow\">$" + bitcoin + " USD</font>");
@@ -158,7 +158,7 @@ if (what == kBaseUrl2) // BZLCoin Market Cap
     // QNetworkReply is a QIODevice. So we read from it just like it was a file
     QString dnrmc = finished->readAll();
     dnrmc2 = (dnrmc.toDouble());
-    dnrmc = QString::number(dnrmc2);
+    dnrmc = QString::number(dnrmc2, 'f', 2);
 	
     if(dnrmc > dnrmcp)
     {

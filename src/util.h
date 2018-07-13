@@ -127,15 +127,11 @@ inline void MilliSleep(int64_t n)
 
 
 
-//Dark features
+//Masternode features
 
 extern bool fMasterNode;
-extern bool fLiteMode;
-extern int nInstantXDepth;
 extern int nDarksendRounds;
-extern int nAnonymizeBzlcoinAmount;
-extern int nLiquidityProvider;
-extern bool fEnableDarksend;
+
 extern int64_t enforceMasternodePaymentsTime;
 extern std::string strMasterNodeAddr;
 extern int keysLoaded;
