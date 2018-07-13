@@ -9,7 +9,7 @@ QT += core gui network widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 lessThan(QT_MAJOR_VERSION, 5): CONFIG += static
-QMAKE_CXXFLAGS = -fpermissive
+QMAKE_CXXFLAGS += -fpermissive
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets printsupport
@@ -17,13 +17,13 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 win32 {
-BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
-BOOST_INCLUDE_PATH=C:/deps/boost_1_55_0
-BOOST_LIB_PATH=C:/deps/boost_1_55_0/stage/lib
+BOOST_LIB_SUFFIX=-mgw49-mt-s-1_57
+BOOST_INCLUDE_PATH=C:/deps/boost_1_57_0
+BOOST_LIB_PATH=C:/deps/boost_1_57_0/stage/lib
 BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
 BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1j/include
-OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1j
+OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1l/include
+OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1l
 MINIUPNPC_INCLUDE_PATH=C:/deps/
 MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
 LIBPNG_INCLUDE_PATH=C:/deps/libpng-1.6.16
@@ -65,7 +65,8 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--large-address-aware -static
+# win32:QMAKE_LFLAGS *= -Wl,--large-address-aware -static
+win32:QMAKE_LFLAGS *= -static
 win32:QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 lessThan(QT_MAJOR_VERSION, 5): win32: QMAKE_LFLAGS *= -static
 
@@ -75,6 +76,10 @@ contains(USE_QRCODE, 1) {
     message(Building with QRCode support)
     DEFINES += USE_QRCODE
     LIBS += -lqrencode
+}
+contains(USE_PROFILER, 1) {
+    QMAKE_LFLAGS += -pg
+    QMAKE_CXXFLAGS += -pg
 }
 
 # use: qmake "USE_UPNP=1" ( enabled by default; default)
@@ -245,13 +250,11 @@ HEADERS += src/qt/bitcoingui.h \
     src/key.h \
     src/db.h \
     src/txdb.h \
-	src/txmempool.h \
     src/walletdb.h \
     src/script.h \
     src/stealth.h \
 	src/darksend.h \
 	src/activemasternode.h \
-	src/instantx.h \
 	src/masternode.h \
 	src/masternodeconfig.h \
 	src/spork.h \
@@ -299,7 +302,7 @@ HEADERS += src/qt/bitcoingui.h \
 	src/qt/blockbrowser.h \
 	src/qt/statisticspage.h \
 	src/qt/marketbrowser.h \
-	src/qt/darksendconfig.h \
+	src/qt/qcustomplot.h \
 	src/qt/masternodemanager.h \
     src/qt/addeditadrenalinenode.h \
     src/qt/adrenalinenodeconfigdialog.h \
@@ -362,7 +365,6 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/checkpoints.cpp \
     src/addrman.cpp \
     src/db.cpp \
-	src/txmempool.cpp \
 	src/eccryptoverify.cpp \
     src/walletdb.cpp \
     src/qt/clientmodel.cpp \
@@ -403,11 +405,11 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/trafficgraphwidget.cpp \
     src/qt/messagepage.cpp \
     src/qt/messagemodel.cpp \
+	src/qt/qcustomplot.cpp \
     src/qt/sendmessagesdialog.cpp \
     src/qt/sendmessagesentry.cpp \
     src/qt/qvalidatedtextedit.cpp \
     src/qt/plugins/mrichtexteditor/mrichtextedit.cpp \
-	src/qt/darksendconfig.cpp \
 	src/qt/masternodemanager.cpp \
     src/qt/addeditadrenalinenode.cpp \
     src/qt/adrenalinenodeconfigdialog.cpp \
@@ -421,7 +423,6 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/stealth.cpp \
 	src/darksend.cpp \
 	src/activemasternode.cpp \
-	src/instantx.cpp \
 	src/masternode.cpp \
 	src/masternodeconfig.cpp \
 	src/spork.cpp
@@ -450,7 +451,6 @@ FORMS += \
 	src/qt/forms/statisticspage.ui \
 	src/qt/forms/blockbrowser.ui \
 	src/qt/forms/marketbrowser.ui \
-	src/qt/forms/darksendconfig.ui \
     src/qt/forms/masternodemanager.ui \
     src/qt/forms/addeditadrenalinenode.ui \
     src/qt/forms/adrenalinenodeconfigdialog.ui \
@@ -460,7 +460,6 @@ FORMS += \
     src/qt/forms/sendmessagesentry.ui \
     src/qt/forms/sendmessagesdialog.ui \
     src/qt/plugins/mrichtexteditor/mrichtextedit.ui
-
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h
 SOURCES += src/qt/qrcodedialog.cpp

@@ -47,8 +47,6 @@ void OptionsModel::Init()
     nTransactionFee = settings.value("nTransactionFee").toLongLong();
     nReserveBalance = settings.value("nReserveBalance").toLongLong();
     language = settings.value("language", "").toString();
-	nDarksendRounds = settings.value("nDarksendRounds").toLongLong();
-    nAnonymizeBzlcoinAmount = settings.value("nAnonymizeBzlcoinAmount").toLongLong();
 
     // These are shared with core Bitcoin; we want
     // command-line options to override the GUI settings:
@@ -58,10 +56,6 @@ void OptionsModel::Init()
         SoftSetArg("-proxy", settings.value("addrProxy").toString().toStdString());
     if (settings.contains("nSocksVersion") && settings.value("fUseProxy").toBool())
         SoftSetArg("-socks", settings.value("nSocksVersion").toString().toStdString());
-	if (settings.contains("nDarksendRounds"))
-        SoftSetArg("-darksendrounds", settings.value("nDarksendRounds").toString().toStdString());
-    if (settings.contains("nAnonymizeBzlcoinAmount"))
-        SoftSetArg("-anonymizebzlcoinamount", settings.value("nAnonymizeBzlcoinAmount").toString().toStdString());
     if (settings.contains("detachDB"))
         SoftSetBoolArg("-detachdb", settings.value("detachDB").toBool());
     if (!language.isEmpty())
@@ -118,10 +112,6 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return QVariant(bitdb.GetDetach());
         case Language:
             return settings.value("language", "");
-		case DarksendRounds:
-            return QVariant(nDarksendRounds);
-        case AnonymizeBzlcoinAmount:
-            return QVariant(nAnonymizeBzlcoinAmount);
         case CoinControlFeatures:
             return QVariant(fCoinControlFeatures);
         default:
@@ -217,16 +207,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case Language:
             settings.setValue("language", value);
-            break;
-		case DarksendRounds:
-            nDarksendRounds = value.toInt();
-            settings.setValue("nDarksendRounds", nDarksendRounds);
-            emit darksendRoundsChanged(nDarksendRounds);
-            break;
-        case AnonymizeBzlcoinAmount:
-            nAnonymizeBzlcoinAmount = value.toInt();
-            settings.setValue("nAnonymizeBzlcoinAmount", nAnonymizeBzlcoinAmount);
-            emit anonymizeBzlcoinAmountChanged(nAnonymizeBzlcoinAmount);
             break;
         case CoinControlFeatures: {
             fCoinControlFeatures = value.toBool();

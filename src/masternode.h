@@ -13,6 +13,7 @@
 #include "key.h"
 #include "util.h"
 #include "base58.h"
+#include "hashblock.h"
 #include "main.h"
 #include "script.h"
 
@@ -31,11 +32,12 @@ class uint256;
 #define MASTERNODE_REMOTELY_ENABLED            9
 
 #define MASTERNODE_MIN_CONFIRMATIONS           15
-#define MASTERNODE_MIN_DSEEP_SECONDS           (30*60)
+#define MASTERNODE_MIN_DSEEP_SECONDS           (10*60)
 #define MASTERNODE_MIN_DSEE_SECONDS            (5*60)
 #define MASTERNODE_PING_SECONDS                (1*60)
-#define MASTERNODE_EXPIRATION_SECONDS          (65*60)
-#define MASTERNODE_REMOVAL_SECONDS             (70*60)
+#define MASTERNODE_EXPIRATION_SECONDS          (120*60)
+#define MASTERNODE_REMOVAL_SECONDS             (130*60)
+#define MASTERNODE_CHECK_SECONDS               10
 
 using namespace std;
 
@@ -43,10 +45,14 @@ class CMasternodePaymentWinner;
 
 extern CCriticalSection cs_masternodes;
 extern std::vector<CMasterNode> vecMasternodes;
+extern std::vector<pair<int, CMasterNode*> > vecMasternodeScores;
+extern std::vector<pair<int, CMasterNode> > vecMasternodeRanks;
 extern CMasternodePayments masternodePayments;
 extern std::vector<CTxIn> vecMasternodeAskedFor;
 extern map<uint256, CMasternodePaymentWinner> mapSeenMasternodeVotes;
 extern map<int64_t, uint256> mapCacheBlockHashes;
+extern unsigned int mnCount;
+
 
 
 // manage the masternode connections
@@ -55,6 +61,7 @@ int CountMasternodesAboveProtocol(int protocolVersion);
 
 
 void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+bool CheckMasternodeVin(CTxIn& vin, std::string& errorMessage);
 
 //
 // The Masternode Class. For managing the darksend process. It contains the input of the 1000 BZL, signature to prove
@@ -78,10 +85,14 @@ public:
     bool unitTest;
     bool allowFreeTx;
     int protocolVersion;
+    int64_t lastTimeChecked;
+    int nBlockLastPaid;
+    int64_t nTimeLastChecked;
+    int64_t nTimeLastPaid;
+
 
     //the dsq count from the last dsq broadcast of this node
     int64_t nLastDsq;
-
     CMasterNode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newNow, CPubKey newPubkey2, int protocolVersionIn)
     {
         addr = newAddr;
@@ -99,9 +110,15 @@ public:
         lastDseep = 0;
         allowFreeTx = true;
         protocolVersion = protocolVersionIn;
+        lastTimeChecked = 0;
+        nBlockLastPaid = 0;
+        nTimeLastChecked = 0;
+        nTimeLastPaid = 0;
     }
 
     uint256 CalculateScore(int mod=1, int64_t nBlockHeight=0);
+
+    void UpdateLastPaidBlock(const CBlockIndex *pindex, int nMaxBlocksToScanBack);
 
     void UpdateLastSeen(int64_t override=0)
     {
@@ -119,7 +136,7 @@ public:
         return n;
     }
 
-    void Check();
+    void Check(bool forceCheck=false);
 
     bool UpdatedWithin(int seconds)
     {
@@ -156,9 +173,9 @@ public:
 int GetCurrentMasterNode(int mod=1, int64_t nBlockHeight=0, int minProtocol=CMasterNode::minProtoVersion);
 
 int GetMasternodeByVin(CTxIn& vin);
-int GetMasternodeRank(CTxIn& vin, int64_t nBlockHeight=0, int minProtocol=CMasterNode::minProtoVersion);
+int GetMasternodeRank(CMasterNode& tmn, int64_t nBlockHeight=0, int minProtocol=CMasterNode::minProtoVersion);
 int GetMasternodeByRank(int findRank, int64_t nBlockHeight=0, int minProtocol=CMasterNode::minProtoVersion);
-
+bool GetMasternodeRanks();
 
 // for storing the winning payments
 class CMasternodePaymentWinner
@@ -178,7 +195,7 @@ public:
     }
 
     uint256 GetHash(){
-        uint256 n2 = Hash(BEGIN(nBlockHeight), END(nBlockHeight));
+        uint256 n2 = Tribus(BEGIN(nBlockHeight), END(nBlockHeight));
         uint256 n3 = vin.prevout.hash > n2 ? (vin.prevout.hash - n2) : (n2 - vin.prevout.hash);
 
         return n3;
@@ -196,6 +213,23 @@ public:
         READWRITE(vchSig);
      }
 };
+
+inline bool operator==(const CMasterNode& a, const CMasterNode& b)
+{
+    return a.vin == b.vin;
+}
+inline bool operator!=(const CMasterNode& a, const CMasterNode& b)
+{
+    return !(a.vin == b.vin);
+}
+inline bool operator<(const CMasterNode& a, const CMasterNode& b)
+{
+    return (a.nBlockLastPaid < b.nBlockLastPaid);
+}
+inline bool operator>(const CMasterNode& a, const CMasterNode& b)
+{
+    return (a.nBlockLastPaid > b.nBlockLastPaid);
+}
 
 //
 // Masternode Payments Class
@@ -229,6 +263,7 @@ public:
     // and get paid this block
     //
 
+    int vecMasternodeRanksLastUpdated;
     uint64_t CalculateScore(uint256 blockHash, CTxIn& vin);
     bool GetWinningMasternode(int nBlockHeight, CTxIn& vinOut);
     bool AddWinningMasternode(CMasternodePaymentWinner& winner);

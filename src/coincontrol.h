@@ -12,23 +12,23 @@ public:
     bool fAllowOtherInputs;
     //! Includes watch only addresses which match the ISMINE_WATCH_SOLVABLE criteria
     bool fAllowWatchOnly;
-    
-    bool useDarkSend;
-    bool useInstantX;
+
+    bool fSplitBlock;
+    int nSplitBlock;
 
     CCoinControl()
     {
         SetNull();
     }
-        
+
     void SetNull()
     {
         destChange = CNoDestination();
         setSelected.clear();
         fAllowOtherInputs = false;
         fAllowWatchOnly = false;
-        useInstantX = false;
-        useDarkSend = false;
+        fSplitBlock = false;
+        nSplitBlock = 1;
     }
     
     bool HasSelected() const

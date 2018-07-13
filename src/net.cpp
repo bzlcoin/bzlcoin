@@ -94,7 +94,7 @@ unsigned short GetListenPort()
     return (unsigned short)(GetArg("-port", GetDefaultPort()));
 }
 
-/*
+
 void CNode::PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd)
 {
     // Filter out duplicate requests
@@ -105,7 +105,7 @@ void CNode::PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd)
 
     PushMessage("getblocks", CBlockLocator(pindexBegin), hashEnd);
 }
-*/
+
 
 // find 'best' local address for a particular peer
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
@@ -489,20 +489,20 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, bool darkSendMaste
         CNode* pnode = FindNode((CService)addrConnect);
         if (pnode)
         {
-	    if(darkSendMaster)
+            if(darkSendMaster)
                 pnode->fDarkSendMaster = true;
 
             pnode->AddRef();
 
-	        pnode->PushMessage("mktinv", GetTime() - (7 * 24 * 60 * 60));
-	    
+            pnode->PushMessage("mktinv", GetTime() - (7 * 24 * 60 * 60));
+
             return pnode;
         }
     }
 
 
     /// debug print
-    printf("net", "trying connection %s lastseen=%.1fhrs\n",
+        printf("net: trying connection %s lastseen=%.1fhrs\n",
         pszDest ? pszDest : addrConnect.ToString().c_str(),
         pszDest ? 0 : (double)(GetAdjustedTime() - addrConnect.nTime)/3600.0);
 
@@ -514,7 +514,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, bool darkSendMaste
     {
         addrman.Attempt(addrConnect);
 
-        printf("net", "connected %s\n", pszDest ? pszDest : addrConnect.ToString().c_str());
+        printf("net: connected %s\n", pszDest ? pszDest : addrConnect.ToString().c_str());
 
         // Set to non-blocking
 #ifdef WIN32
@@ -786,10 +786,10 @@ void SocketSendData(CNode *pnode)
         if (nBytes > 0) {
             pnode->nLastSend = GetTime();
             pnode->nSendOffset += nBytes;
-            
+
             pnode->nSendBytes += nBytes;
             pnode->RecordBytesSent(nBytes);
-            
+
             if (pnode->nSendOffset == data.size()) {
                 pnode->nSendOffset = 0;
                 pnode->nSendSize -= data.size();
@@ -1318,7 +1318,7 @@ void MapPort()
 // The second name should resolve to a list of seed addresses.
 
 static const char *strDNSSeed[][2] = {
-    	{"67.207.89.186", "67.207.89.186"},
+	{"67.207.89.186", "67.207.89.186"},
 	{"128.199.216.229", "128.199.216.229"},
 	{"128.199.200.72", "128.199.200.72"},
 	{"95.85.34.235", "95.85.34.235"}
@@ -1779,7 +1779,7 @@ void ThreadOpenAddedConnections2(void* parg)
         BOOST_FOREACH(vector<CService>& vserv, lservAddressesToAdd)
         {
             CSemaphoreGrant grant(*semOutbound);
-            OpenNetworkConnection(CAddress(vserv[i % vserv.size()]), &grant);   
+            OpenNetworkConnection(CAddress(vserv[i % vserv.size()]), &grant);
             MilliSleep(500);
 			if (fShutdown)
                 return;
@@ -1909,6 +1909,8 @@ void ThreadMessageHandler2(void* parg)
 		if (!fHaveSyncNode)
             StartSync(vNodesCopy);
 
+        bool fSleep = true;
+
         // Poll the connected nodes for messages
         CNode* pnodeTrickle = NULL;
         if (!vNodesCopy.empty())
@@ -1922,9 +1924,22 @@ void ThreadMessageHandler2(void* parg)
             {
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv)
+                {
                     if (!ProcessMessages(pnode))
                         pnode->CloseSocketDisconnect();
+
+                    if (pnode->nSendSize < SendBufferSize())
+                    {
+                        if (!pnode->vRecvGetData.empty() || (!pnode->vRecvMsg.empty() && pnode->vRecvMsg[0].complete()))
+                        {
+                            fSleep = false;
+                        }
+                    }
+                }
             }
+
+            boost::this_thread::interruption_point();
+
             if (fShutdown)
                 return;
 
@@ -1948,7 +1963,8 @@ void ThreadMessageHandler2(void* parg)
         // Reduce vnThreadsRunning so StopNode has permission to exit while
         // we're sleeping, but we must always check fShutdown after doing this.
         vnThreadsRunning[THREAD_MESSAGEHANDLER]--;
-        MilliSleep(100);
+        if (fSleep)
+            MilliSleep(100);
         if (fRequestShutdown)
             StartShutdown();
         vnThreadsRunning[THREAD_MESSAGEHANDLER]++;

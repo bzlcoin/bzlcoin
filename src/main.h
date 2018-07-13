@@ -11,7 +11,6 @@
 #include "bignum.h"
 #include "sync.h"
 #include "net.h"
-#include "txmempool.h"
 #include "script.h"
 #include "scrypt.h"
 #include "hashblock.h"
@@ -21,7 +20,6 @@
 class CValidationState;
 
 #define BLOCK_START_MASTERNODE_PAYMENTS_TESTNET 3700 // Testnet Masternode payments enabled block 81k5
-#define BLOCK_START_MASTERNODE_PEER_VERSION_CHECK 340000
 #define BLOCK_START_MASTERNODE_PAYMENTS 342000 //Mainnet Masternode payments not enabled until block 342k
 
 //#define START_MASTERNODE_PAYMENTS_TESTNET 1519430400  //Sat, 24 Feb 2018 00:00:00 GMT
@@ -34,14 +32,6 @@ static const int64_t DARKSEND_POOL_MAX = (11000*COIN); //11,000 BZL
 #define MESSAGE_START_SIZE 4
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
 
-/*
-    At 15 signatures, 1/2 of the masternode network can be owned by
-    one party without comprimising the security of InstantX
-    (1000/2150.0)**15 = 1.031e-05
-*/
-#define INSTANTX_SIGNATURES_REQUIRED           20
-#define INSTANTX_SIGNATURES_TOTAL              30
-
 #define MASTERNODE_NOT_PROCESSED               0 // initial state
 #define MASTERNODE_IS_CAPABLE                  1
 #define MASTERNODE_NOT_CAPABLE                 2
@@ -51,13 +41,6 @@ typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
 #define MASTERNODE_PORT_OPEN                   7
 #define MASTERNODE_SYNC_IN_PROCESS             8
 #define MASTERNODE_REMOTELY_ENABLED            9
-
-#define MASTERNODE_MIN_CONFIRMATIONS           15
-#define MASTERNODE_MIN_DSEEP_SECONDS           (30*60)
-#define MASTERNODE_MIN_DSEE_SECONDS            (5*60)
-#define MASTERNODE_PING_SECONDS                (1*60)
-#define MASTERNODE_EXPIRATION_SECONDS          (65*60)
-#define MASTERNODE_REMOVAL_SECONDS             (70*60)
 
 class CWallet;
 class CBlock;
@@ -70,6 +53,7 @@ class CAddress;
 class CInv;
 class CRequestTracker;
 class CNode;
+
 
 // General BZLCoin Block Values
 
@@ -102,11 +86,13 @@ static const unsigned int MAX_P2SH_SIGOPS = 15;
 static const uint256 hashGenesisBlock("0x00000f798024aeffced4936e4e8a01e361fd03ccff4faa27f3db5290fc5feee5");
 static const uint256 hashGenesisBlockTestNet("0x0000c6b171b36333f84543010ecb8613fe3d4eafdfe31a639861d9bd7dd72338");
 
-
 inline int64_t PastDrift(int64_t nTime)   { return nTime - 10 * 60; } // up to 10 minutes from the past
 inline int64_t FutureDrift(int64_t nTime) { return nTime + 10 * 60; } // up to 10 minutes from the future
 
 //inline unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV2(nHeight) ? 60 : 60; }
+
+
+inline int64_t GetMNCollateral2() { return 2500; }
 
 inline int64_t GetMNCollateral() { return 1000; }
 
@@ -141,7 +127,6 @@ inline int64_t GetMNCollateralForBlock(int64_t nBlock)
     return nCollateral;
 }
 
-
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
 extern std::map<uint256, CBlockIndex*> mapBlockIndex;
@@ -168,7 +153,7 @@ extern std::set<CWallet*> setpwalletRegistered;
 extern unsigned char pchMessageStart[4];
 extern std::map<uint256, CBlock*> mapOrphanBlocks;
 
-extern CTxMemPool mempool;
+//extern CTxMemPool mempool;
 
 // Settings
 extern int64_t nTransactionFee;
@@ -178,6 +163,7 @@ extern bool fUseFastIndex;
 extern bool fImporting;
 extern bool fReindex;
 extern unsigned int nDerivationMethodIndex;
+extern unsigned int nCoinCacheSize;
 
 extern bool fEnforceCanonical;
 
@@ -204,7 +190,7 @@ bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, bool fSendTrickle);
 bool LoadExternalBlockFile(FILE* fileIn);
 
-void PushGetBlocks(CNode* pnode, CBlockIndex* pindexBegin, uint256 hashEnd);
+//void PushGetBlocks(CNode* pnode, CBlockIndex* pindexBegin, uint256 hashEnd);
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake);
@@ -221,14 +207,6 @@ const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfSta
 void StakeMiner(CWallet *pwallet);
 void ResendWalletTransactions(bool fForce = false);
 
-
-
-/** (try to) add transaction to memory pool **/
-bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx, bool fLimitFree,
-                        bool* pfMissingInputs);
-
-bool AcceptableInputs(CTxMemPool& pool, const CTransaction &txo, bool fLimitFree,
-                        bool* pfMissingInputs);
 
 
 bool FindTransactionsByDestination(const CTxDestination &dest, std::vector<uint256> &vtxhash);
@@ -575,7 +553,7 @@ public:
                        std::map<uint256, CTxIndex>& mapTestPool, const CDiskTxPos& posThisTx,
                        const CBlockIndex* pindexBlock, bool fBlock, bool fMiner, unsigned int flags = STANDARD_SCRIPT_VERIFY_FLAGS, bool fValidateSig = true);
     bool CheckTransaction() const;
-    //bool AcceptToMemoryPool(CTxDB& txdb, bool* pfMissingInputs=NULL);
+    bool AcceptToMemoryPool(CTxDB& txdb, bool* pfMissingInputs=NULL);
     bool GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const;  // ppcoin: get transaction coin age
 
     const CTxOut& GetOutputFor(const CTxIn& input, const MapPrevTx& inputs) const;
@@ -591,7 +569,7 @@ class CMerkleTx : public CTransaction
 private:
     /** Constant used in hashBlock to indicate tx has been abandoned */
     static const uint256 ABANDON_HASH;
-    
+
     int GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const;
 public:
     uint256 hashBlock;
@@ -641,11 +619,10 @@ public:
     int GetDepthInMainChain() const { CBlockIndex *pindexRet; return GetDepthInMainChain(pindexRet); }
     bool IsInMainChain() const { CBlockIndex *pindexRet; return GetDepthInMainChainINTERNAL(pindexRet) > 0; }
     int GetBlocksToMaturity() const;
-    bool AcceptToMemoryPool(bool fLimitFree=true);
+    bool AcceptToMemoryPool(CTxDB& txdb);
+    bool AcceptToMemoryPool();
     bool isAbandoned() const { return (hashBlock == ABANDON_HASH); }
     void setAbandoned() { hashBlock = ABANDON_HASH; }
-	int GetTransactionLockSignatures() const;
-    bool IsTransactionLockTimedOut() const;
 };
 
 
@@ -1511,5 +1488,53 @@ public:
     unsigned char GetRejectCode() const { return chRejectCode; }
     std::string GetRejectReason() const { return strRejectReason; }
 };
+
+class CTxMemPool
+{
+private:
+    unsigned int nTransactionsUpdated;
+public:
+    mutable CCriticalSection cs;
+    std::map<uint256, CTransaction> mapTx;
+    std::map<COutPoint, CInPoint> mapNextTx;
+
+    bool accept(CTxDB& txdb, CTransaction &tx,
+                bool* pfMissingInputs);
+    bool addUnchecked(const uint256& hash, CTransaction &tx);
+    bool remove(const CTransaction &tx, bool fRecursive = false);
+    bool removeConflicts(const CTransaction &tx);
+    void clear();
+    void queryHashes(std::vector<uint256>& vtxid);
+    unsigned int GetTransactionsUpdated() const;
+    void AddTransactionsUpdated(unsigned int n);
+
+    unsigned long size() const
+    {
+        LOCK(cs);
+        return mapTx.size();
+    }
+
+    bool exists(uint256 hash) const
+    {
+        LOCK(cs);
+        return (mapTx.count(hash) != 0);
+    }
+
+    bool lookup(uint256 hash, CTransaction& result) const
+    {
+        LOCK(cs);
+        std::map<uint256, CTransaction>::const_iterator i = mapTx.find(hash);
+        if (i == mapTx.end()) return false;
+        result = i->second;
+        return true;
+    }
+};
+
+extern CTxMemPool mempool;
+
+/** (try to) add transaction to memory pool **/
+
+bool AcceptableInputs(CTxMemPool& pool, const CTransaction &txo, bool fLimitFree,
+                        bool* pfMissingInputs);
 
 #endif

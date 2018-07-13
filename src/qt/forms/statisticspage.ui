@@ -117,7 +117,7 @@ font-family:'Open Sans,sans-serif';</string>
          <number>139</number>
         </property>
         <property name="verticalSpacing">
-         <number>18</number>
+         <number>10</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
@@ -306,7 +306,7 @@ font-family:'Open Sans,sans-serif';</string>
         <item row="13" column="1">
          <widget class="QLabel" name="mncost">
           <property name="text">
-           <string>1,000 BZL</string>
+           <string>2,000 BZL</string>
           </property>
          </widget>
         </item>

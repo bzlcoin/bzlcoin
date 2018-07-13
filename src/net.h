@@ -370,6 +370,7 @@ public:
         nPingUsecStart = 0;
         nPingUsecTime = 0;
         fPingQueued = false;
+        fDarkSendMaster = false;
 
         // Be shy and don't send version until we hear
         if (hSocket != INVALID_SOCKET && !fInbound)
@@ -492,16 +493,16 @@ public:
 
 
 
-    void BeginMessage(const char* pszCommand)
+    void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
     {
         ENTER_CRITICAL_SECTION(cs_vSend);
         assert(ssSend.size() == 0);
         ssSend << CMessageHeader(pszCommand, 0);
         if (fDebug)
-            printf("sending: %s ", pszCommand);
+            printf("net: to %s: %s ", this->addr.ToString().c_str(), pszCommand);
     }
 
-    void AbortMessage()
+    void AbortMessage() UNLOCK_FUNCTION(cs_vSend)
     {
         ssSend.clear();
 
@@ -511,7 +512,7 @@ public:
             printf("(aborted)\n");
     }
 
-    void EndMessage()
+    void EndMessage() UNLOCK_FUNCTION(cs_vSend)
     {
         if (mapArgs.count("-dropmessagestest") && GetRand(atoi(mapArgs["-dropmessagestest"])) == 0)
         {
@@ -740,6 +741,8 @@ template<typename T1, typename T2, typename T3, typename T4, typename T5, typena
         if(HasFulfilledRequest(strRequest)) return;
         vecRequestsFulfilled.push_back(strRequest);
     }
+	
+	void PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd);
 
     bool IsSubscribed(unsigned int nChannel);
     void Subscribe(unsigned int nChannel, unsigned int nHops=0);

@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #include "protocol.h"
 #include "activemasternode.h"
+#include "masternodeconfig.h"
 #include <boost/lexical_cast.hpp>
 #include "clientversion.h"
 
@@ -43,12 +44,12 @@ void CActiveMasternode::ManageStatus()
         }
 
         // Limits the masternode port to be fixed and unique
-        if (service.GetPort() != GetDefaultPort()) {
+       /* if (service.GetPort() != GetDefaultPort()) {
             notCapableReason = "Masternode port not configured correctly.";
             status = MASTERNODE_NOT_CAPABLE;
             printf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason.c_str());
             return;
-        }
+        }*/
         
         printf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString().c_str());
 
@@ -349,6 +350,55 @@ bool CActiveMasternode::GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secr
     return GetVinFromOutput(*selectedOutput, vin, pubkey, secretKey);
 }
 
+bool CActiveMasternode::GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage) {
+
+    // Find possible candidates
+    vector<COutput> possibleCoins = SelectCoinsMasternode(false);
+    COutput *selectedOutput;
+
+    // Find the vin
+    if(!strTxHash.empty()) {
+        // Let's find it
+        uint256 txHash(strTxHash);
+        int outputIndex = boost::lexical_cast<int>(strOutputIndex);
+        bool found = false;
+        BOOST_FOREACH(COutput& out, possibleCoins) {
+            if(out.tx->GetHash() == txHash && out.i == outputIndex)
+            {
+                if (out.tx->IsSpent(outputIndex))
+                {
+                        errorMessage = "vin was spent";
+                        return false;
+                }
+                selectedOutput = &out;
+                found = true;
+                break;
+            }
+        }
+        if(!found) {
+            errorMessage = "Could not locate valid vin";
+            return false;
+        }
+    } else {
+        // No output specified,  Select the first one
+        if(possibleCoins.size() > 0) {
+            // May cause problems with multiple transactions.
+            selectedOutput = &possibleCoins[0];
+        } else {
+            errorMessage = "Could not locate specified vin from coins in wallet";
+            return false;
+        }
+    }
+
+    // At this point we have a selected output, retrieve the associated info
+    if (!GetVinFromOutput(*selectedOutput, vin, pubkey, secretKey))
+    {
+        errorMessage = "could not allocate vin";
+        return false;
+    }
+    return true;
+}
+
 bool CActiveMasternode::GetMasterNodeVinForPubKey(std::string collateralAddress, CTxIn& vin, CPubKey& pubkey, CKey& secretKey) {
     return GetMasterNodeVinForPubKey(collateralAddress, vin, pubkey, secretKey, "", "");
 }
@@ -421,14 +471,31 @@ bool CActiveMasternode::GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubke
 }
 
 // get all possible outputs for running masternode
-vector<COutput> CActiveMasternode::SelectCoinsMasternode()
+vector<COutput> CActiveMasternode::SelectCoinsMasternode(bool fSelectUnlocked)
 {
     vector<COutput> vCoins;
     vector<COutput> filteredCoins;
+    vector<COutPoint> confLockedCoins;
     CBlockIndex *blockIndexAux;
+    // Temporary unlock MN coins from masternode.conf
+    if(fSelectUnlocked && GetBoolArg("-mnconflock", true)) {
+        uint256 mnTxHash;
+        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+            mnTxHash.SetHex(mne.getTxHash());
+            COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
+            confLockedCoins.push_back(outpoint);
+            pwalletMain->UnlockCoin(outpoint);
+        }
+    }
 
     // Retrieve all possible outputs
-    pwalletMain->AvailableCoinsMN(vCoins);
+    pwalletMain->AvailableCoinsMN(vCoins, true, fSelectUnlocked);
+
+    // Lock MN coins from masternode.conf back if they where temporary unlocked
+    if(!confLockedCoins.empty()) {
+        BOOST_FOREACH(COutPoint outpoint, confLockedCoins)
+            pwalletMain->LockCoin(outpoint);
+    }
 
     // Filter
     BOOST_FOREACH(const COutput& out, vCoins)
@@ -471,7 +538,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     if(!fMasterNode) return false;
 
     status = MASTERNODE_REMOTELY_ENABLED;
-    notCapableReason = "";
+	notCapableReason = "";
 
     //The values below are needed for signing dseep messages going forward
     this->vin = newVin;

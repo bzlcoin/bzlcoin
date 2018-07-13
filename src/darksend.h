@@ -225,7 +225,7 @@ class CDarksendSession
 class CDarkSendPool
 {
 public:
-    static const int MIN_PEER_PROTO_VERSION = 71797;
+    static const int PROTOCOL_VERSION = 71798; //Latest is 71798
 
     // clients entries
     std::vector<CDarkSendEntry> myEntries;
@@ -410,8 +410,7 @@ public:
     void NewBlock();
     void CompletedTransaction(bool error, std::string lastMessageNew);
     void ClearLastMessage();
-    // used for liquidity providers
-    bool SendRandomPaymentToSelf();
+
     // split up large inputs or make fee sized inputs
     bool MakeCollateralAmounts();
 	
@@ -430,6 +429,6 @@ public:
 
 void ConnectToDarkSendMasterNodeWinner();
 
-void ThreadCheckDarkSendPool();
+void ThreadCheckDarkSendPool(void* parg);
 
 #endif
