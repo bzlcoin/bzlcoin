@@ -1318,10 +1318,11 @@ void MapPort()
 // The second name should resolve to a list of seed addresses.
 
 static const char *strDNSSeed[][2] = {
-	{"67.207.89.186", "67.207.89.186"},
-	{"128.199.216.229", "128.199.216.229"},
-	{"128.199.200.72", "128.199.200.72"},
-	{"95.85.34.235", "95.85.34.235"}
+	{"dnsseed.bzlcoin.org", "dnsseed.bzlcoin.org"},
+	{"explorer.bzlcoin.org", "explorer.bzlcoin.org"},
+	{"network.bzlcoin.org", "network.bzlcoin.org"},
+	{"chainz.cryptoid.info", "chainz.cryptoid.info"},
+	{"seed1.bzlcoin.org", "seed1.bzlcoin.org"}
 };
 
 void ThreadDNSAddressSeed(void* parg)
